@@ -4,7 +4,7 @@ export default{
         user:  'stem',
         password:'fqKV-E_mb2q2tpSK',
         database: 'bdd_stem',
-        port:'25060'
+        port:25060,
           
     }
 
