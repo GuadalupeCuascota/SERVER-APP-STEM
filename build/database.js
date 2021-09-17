@@ -12,4 +12,3 @@ pool.getConnection() //probar la conexión
     console.log('DB es conectada');
 }, err => console.error("No se estableció conexion"));
 exports.default = pool;
-console.log('Server on port');

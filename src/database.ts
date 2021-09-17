@@ -13,5 +13,3 @@ err=>console.error("No se estableció conexion")
 );
 
 export default pool
-
-console.log('Server on port');
