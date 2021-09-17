@@ -41,7 +41,7 @@ class Server {
   
   config(): void {
     //método para establecer el puerto
-    this.app.set("port", process.env.PORT || 3000); //asignar el puerto de valor predetermnad o el valor fijo 3000
+    this.app.set("port", process.env.PORT || 5000); //asignar el puerto de valor predetermnad o el valor fijo 3000
     this.app.use(morgan("dev"));
     this.app.use(cors());
     this.app.use(express.json());
@@ -77,7 +77,7 @@ class Server {
   start(): void {
     //método para inicializar el servidor
     this.app.listen(this.app.get("port"), () => {
-      console.log("Server on port", this.app.get("port"));
+      console.log("Server on port es", this.app.get("port"));
       console.log("probando")
     });
   }
