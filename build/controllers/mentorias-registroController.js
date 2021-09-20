@@ -79,7 +79,7 @@ class MentoriasController {
                 }
             }
             catch (err) {
-                res.status(404).json({ text: "hubo un error" });
+                res.status(404).json({ text: "hubo un error" + err });
                 console.log("hubo un errro" + err);
             }
         });
