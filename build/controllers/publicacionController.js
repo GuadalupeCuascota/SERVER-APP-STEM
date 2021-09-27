@@ -50,65 +50,203 @@ class ArchivosController {
             res.status(404).json({ text: "publicación no existe" });
         });
     }
+    // public async create1(req: Request, res: Response) {
+    //   console.log("ARCHIVO CLOUDINARY");
+    //   const cloudinary = require("cloudinary");
+    //   cloudinary.config({
+    //     //conexion a cloudinary
+    //     cloud_name: "dlmebnxnv",
+    //     api_key: "941161988641637",
+    //     api_secret: "goFBkSN4gSR10QPWAhS4e18-O5U",
+    //   });
+    //   const fs = require("fs-extra");
+    //   try {
+    //     const {
+    //       titulo,
+    //       nombre_perfil,
+    //       descripcion,
+    //       enlace,
+    //       profesion,
+    //       estado_profesion,
+    //       id_tipo_publicacion,
+    //       id_usuario,
+    //       id_estado_publicacion,
+    //       id_carrera,
+    //     } = req.body;
+    //     const result=await cloudinary.v2.uploader.upload(req.file.path)
+    //     const query =
+    //       "INSERT INTO publicacion (titulo,nombre_perfil,descripcion,enlace,profesion,estado_profesion,ruta_archivo,public_id_archivo,tipo_archivo,id_tipo_publicacion,id_usuario,id_estado_publicacion,id_carrera) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,(select id_carrera from carreras_fica where nombre_carrera=?))";
+    //     if (req.file) {
+    //       console.log("ESISTE ARCHIVO");
+    //       const tipo_archivo = req.file.mimetype;
+    //       const ruta_archivo=result.ruta_archivo;
+    //       const public_id=result.public_id
+    //       await pool.query(query, [
+    //         titulo,
+    //         nombre_perfil,
+    //         descripcion,
+    //         enlace,
+    //         profesion,
+    //         estado_profesion,
+    //         ruta_archivo,
+    //         public_id,
+    //         tipo_archivo,
+    //         id_tipo_publicacion,
+    //         id_usuario,
+    //         id_estado_publicacion,
+    //         id_carrera,
+    //       ]);
+    //       await fs.unlink(req.file.path); //eliminar de archivo de la ruta local
+    //       res.status(201).json({ text: "Archivo guardado" });
+    //     } else {
+    //       const query1 =
+    //         "INSERT INTO publicacion (titulo,nombre_perfil,descripcion,enlace,profesion,estado_profesion,id_tipo_publicacion,id_usuario,id_estado_publicacion,id_carrera) VALUES (?,?,?,?,?,?,?,?,?,(select id_carrera from carreras_fica where nombre_carrera=?))";
+    //       console.log("no tiene archivo");
+    //       await pool.query(query1, [
+    //         titulo,
+    //         nombre_perfil,
+    //         descripcion,
+    //         enlace,
+    //         profesion,
+    //         estado_profesion,
+    //         id_tipo_publicacion,
+    //         id_usuario,
+    //         id_estado_publicacion,
+    //         id_carrera,
+    //       ]);
+    //       res.status(201).json({ text: "Archivo guardado" });
+    //     }
+    //   } catch (err) {
+    //     console.log("hubo un error AQUI" + err);
+    //     res.status(404).json({ text: "error no se puede guardar" });
+    //   }
+    // }
     create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const cloudinary = require('cloudinary');
+            const cloudinary = require("cloudinary");
             cloudinary.config({
-                cloud_name: 'dlmebnxnv',
-                api_key: '941161988641637',
-                api_secret: 'goFBkSN4gSR10QPWAhS4e18-O5U'
+                //conexion a cloudinary
+                cloud_name: "dlmebnxnv",
+                api_key: "941161988641637",
+                api_secret: "goFBkSN4gSR10QPWAhS4e18-O5U",
             });
-            const fs = require('fs-extra');
+            const fs = require("fs-extra");
             try {
-                const { titulo, nombre_perfil, descripcion, enlace, profesion, estado_profesion, id_tipo_publicacion, id_usuario, id_estado_publicacion, id_carrera } = req.body;
-                console.log("el archivo", req.file);
-                const result = yield cloudinary.v2.uploader.upload(req.file.path);
-                console.log("RESULT ", result);
-                const query = "INSERT INTO publicacion (titulo,nombre_perfil,descripcion,enlace,profesion,estado_profesion,ruta_archivo,public_id_archivo,tipo_archivo,id_tipo_publicacion,id_usuario,id_estado_publicacion,id_carrera) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,(select id_carrera from carreras_fica where nombre_carrera=?))";
-                if (req.file) {
-                    const ruta_archivo = result.url;
-                    const public_id = result.public_id;
-                    const tipo_archivo = req.file.mimetype;
-                    console.log(ruta_archivo);
-                    console.log(req.file.mimetype);
-                    yield database_1.default.query(query, [
-                        titulo,
-                        nombre_perfil,
-                        descripcion,
-                        enlace,
-                        profesion,
-                        estado_profesion,
-                        ruta_archivo,
-                        public_id,
-                        tipo_archivo,
-                        id_tipo_publicacion,
-                        id_usuario,
-                        id_estado_publicacion,
-                        id_carrera
-                    ]);
-                    yield fs.unlink(req.file.path); //eliminar de archivo de la ruta local
-                    res.status(201).json({ text: "Archivo guardado" });
+                const { titulo, nombre_perfil, descripcion, enlace, profesion, estado_profesion, id_tipo_publicacion, id_usuario, id_estado_publicacion, id_carrera, } = req.body;
+                if (req.file.mimetype == "video/mp4") {
+                    yield cloudinary.v2.uploader.upload(req.file.path, {
+                        resource_type: "video",
+                        // public_id: "myfolder/mysubfolder/dog_closeup",
+                        chunk_size: 6000000,
+                        eager: [
+                            { width: 300, height: 300, crop: "pad", audio_codec: "none" },
+                            {
+                                width: 160,
+                                height: 100,
+                                crop: "crop",
+                                gravity: "south",
+                                audio_codec: "none",
+                            },
+                        ],
+                        eager_async: true,
+                        eager_notification_url: "https://mysite.example.com/notify_endpoint",
+                    }, function (error, result) {
+                        console.log(result, error);
+                        const ruta_archivo = result.secure_url;
+                        const public_id = result.public_id;
+                        console.log("ruta archivo", ruta_archivo);
+                        console.log("poublic id", public_id);
+                        const query = "INSERT INTO publicacion (titulo,nombre_perfil,descripcion,enlace,profesion,estado_profesion,ruta_archivo,public_id_archivo,tipo_archivo,id_tipo_publicacion,id_usuario,id_estado_publicacion,id_carrera) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,(select id_carrera from carreras_fica where nombre_carrera=?))";
+                        if (req.file) {
+                            console.log("ESISTE ARCHIVO");
+                            const tipo_archivo = req.file.mimetype;
+                            console.log(ruta_archivo);
+                            console.log(req.file.mimetype);
+                            database_1.default.query(query, [
+                                titulo,
+                                nombre_perfil,
+                                descripcion,
+                                enlace,
+                                profesion,
+                                estado_profesion,
+                                ruta_archivo,
+                                public_id,
+                                tipo_archivo,
+                                id_tipo_publicacion,
+                                id_usuario,
+                                id_estado_publicacion,
+                                id_carrera,
+                            ]);
+                            fs.unlink(req.file.path); //eliminar de archivo de la ruta local
+                            res.status(201).json({ text: "Archivo guardado" });
+                        }
+                        else {
+                            const query1 = "INSERT INTO publicacion (titulo,nombre_perfil,descripcion,enlace,profesion,estado_profesion,id_tipo_publicacion,id_usuario,id_estado_publicacion,id_carrera) VALUES (?,?,?,?,?,?,?,?,?,(select id_carrera from carreras_fica where nombre_carrera=?))";
+                            console.log("no tiene archivo");
+                            database_1.default.query(query1, [
+                                titulo,
+                                nombre_perfil,
+                                descripcion,
+                                enlace,
+                                profesion,
+                                estado_profesion,
+                                id_tipo_publicacion,
+                                id_usuario,
+                                id_estado_publicacion,
+                                id_carrera,
+                            ]);
+                            res.status(201).json({ text: "Archivo guardado" });
+                        }
+                    });
                 }
                 else {
-                    const query1 = "INSERT INTO publicacion (titulo,nombre_perfil,descripcion,enlace,profesion,estado_profesion,id_tipo_publicacion,id_usuario,id_estado_publicacion,id_carrera) VALUES (?,?,?,?,?,?,?,?,?,(select id_carrera from carreras_fica where nombre_carrera=?))";
-                    console.log("no tiene archivo");
-                    yield database_1.default.query(query1, [
-                        titulo,
-                        nombre_perfil,
-                        descripcion,
-                        enlace,
-                        profesion,
-                        estado_profesion,
-                        id_tipo_publicacion,
-                        id_usuario,
-                        id_estado_publicacion,
-                        id_carrera
-                    ]);
-                    res.status(201).json({ text: "Archivo guardado" });
+                    const result = yield cloudinary.v2.uploader.upload(req.file.path);
+                    console.log(result);
+                    const tipo_archivo = req.file.mimetype;
+                    const ruta_archivo = result.secure_url;
+                    const public_id = result.public_id;
+                    console.log("ruta_archivo", ruta_archivo);
+                    const query = "INSERT INTO publicacion (titulo,nombre_perfil,descripcion,enlace,profesion,estado_profesion,ruta_archivo,public_id_archivo,tipo_archivo,id_tipo_publicacion,id_usuario,id_estado_publicacion,id_carrera) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,(select id_carrera from carreras_fica where nombre_carrera=?))";
+                    if (req.file) {
+                        console.log("EXISTE ARCHIVO");
+                        yield database_1.default.query(query, [
+                            titulo,
+                            nombre_perfil,
+                            descripcion,
+                            enlace,
+                            profesion,
+                            estado_profesion,
+                            ruta_archivo,
+                            public_id,
+                            tipo_archivo,
+                            id_tipo_publicacion,
+                            id_usuario,
+                            id_estado_publicacion,
+                            id_carrera,
+                        ]);
+                        yield fs.unlink(req.file.path); //eliminar de archivo de la ruta local
+                        res.status(201).json({ text: "Archivo guardado" });
+                    }
+                    else {
+                        const query1 = "INSERT INTO publicacion (titulo,nombre_perfil,descripcion,enlace,profesion,estado_profesion,id_tipo_publicacion,id_usuario,id_estado_publicacion,id_carrera) VALUES (?,?,?,?,?,?,?,?,?,(select id_carrera from carreras_fica where nombre_carrera=?))";
+                        console.log("no tiene archivo");
+                        yield database_1.default.query(query1, [
+                            titulo,
+                            nombre_perfil,
+                            descripcion,
+                            enlace,
+                            profesion,
+                            estado_profesion,
+                            id_tipo_publicacion,
+                            id_usuario,
+                            id_estado_publicacion,
+                            id_carrera,
+                        ]);
+                        res.status(201).json({ text: "Archivo guardado" });
+                    }
                 }
             }
-            catch (err) {
-                console.log("hubo un error" + err);
+            catch (error) {
                 res.status(404).json({ text: "error no se puede guardar" });
             }
         });
@@ -116,11 +254,12 @@ class ArchivosController {
     delete(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            const cloudinary = require('cloudinary');
+            const cloudinary = require("cloudinary");
             cloudinary.config({
-                cloud_name: 'dlmebnxnv',
-                api_key: '941161988641637',
-                api_secret: 'goFBkSN4gSR10QPWAhS4e18-O5U'
+                //conexion a cloudinary
+                cloud_name: "dlmebnxnv",
+                api_key: "941161988641637",
+                api_secret: "goFBkSN4gSR10QPWAhS4e18-O5U",
             });
             const publicacion = yield database_1.default.query("SELECT * FROM publicacion WHERE id_publicacion=?", [id]);
             console.log("publicacion a eliminas", publicacion);
@@ -135,18 +274,19 @@ class ArchivosController {
     }
     update(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const cloudinary = require('cloudinary');
+            const cloudinary = require("cloudinary");
             cloudinary.config({
-                cloud_name: 'dlmebnxnv',
-                api_key: '941161988641637',
-                api_secret: 'goFBkSN4gSR10QPWAhS4e18-O5U'
+                //conexion a cloudinary
+                cloud_name: "dlmebnxnv",
+                api_key: "941161988641637",
+                api_secret: "goFBkSN4gSR10QPWAhS4e18-O5U",
             });
-            const fs = require('fs-extra');
+            const fs = require("fs-extra");
             console.log("pasa server actualizar");
             try {
                 const { id } = req.params;
                 console.log("id: " + id);
-                const { titulo, descripcion, enlace, profesion, estado_profesion, } = req.body;
+                const { titulo, descripcion, enlace, profesion, estado_profesion } = req.body;
                 const query = "UPDATE publicacion set titulo=?,descripcion=?,enlace=?, profesion=?,estado_profesion=?, ruta_archivo=? WHERE id_publicacion=?";
                 if (req.file) {
                     const result = yield cloudinary.v2.uploader.upload(req.file.path);
