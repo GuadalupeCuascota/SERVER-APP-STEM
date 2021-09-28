@@ -49,11 +49,11 @@ class CarrerasFicaController {
                 const nombre_carrera = req.body.nombre_carrera;
                 const query = "INSERT INTO carreras_fica(nombre_carrera)VALUES (?)";
                 yield database_1.default.query(query, [nombre_carrera]);
-                res.json({ text: "carrera guardado" });
+                res.status(201).json({ text: "carrera guardada" });
             }
             catch (err) {
                 res.json({ text: "Hubo un error " });
-                console.log("hubo un errro" + err);
+                res.status(404).json({ text: err });
             }
         });
     }
@@ -62,7 +62,7 @@ class CarrerasFicaController {
             try {
                 const { id } = req.params;
                 yield database_1.default.query(" DELETE FROM carreras_fica WHERE id_carrera=?", [id]);
-                res.status(201).json({ text: "carrera guardado" });
+                res.status(201).json({ text: "carrera eliminada" });
             }
             catch (err) {
                 res.status(404).json({ text: err });
@@ -79,10 +79,10 @@ class CarrerasFicaController {
             if (id_carrera) {
                 try {
                     const roles = yield database_1.default.query(" UPDATE  carreras_fica set nombre_carrera=? WHERE id_carrera=?", [nombre_carrera, id]);
-                    res.json({ message: "actualizado" });
+                    res.status(201).json({ text: "carrera actualizada" });
                 }
                 catch (error) {
-                    res.json({ text: "Hubo un error ", error });
+                    res.status(404).json({ text: "No se puede actualizar" });
                     console.log("No se puede actualizar" + error);
                 }
             }

@@ -57,9 +57,7 @@ class AngerdarMentoriaController {
             if (registroMentoriasporUsuario.length > 0) {
                 return res.status(200).json(registroMentoriasporUsuario);
             }
-            res
-                .status(404)
-                .json({ text: "En este momento no existe mentorias disponibles" });
+            res.status(404).json({ text: "En este momento no existe mentorias disponibles" });
         });
     }
     getOne(req, res) {
@@ -93,7 +91,7 @@ class AngerdarMentoriaController {
                 res.status(201).json({ text: "mentoria agendada" });
             }
             catch (err) {
-                res.json({ text: "Hubo un error " });
+                res.status(404).json({ text: "Hubo un error " });
                 console.log("hubo un errro" + err);
             }
         });
