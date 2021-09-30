@@ -100,17 +100,18 @@ class MentoriasController {
 
   public async update(req: Request, res: Response) {
     console.log("fecha:" + req.body.fecha);
+    console.log("pasa actualizar:");
     try {
       const { id } = req.params;
       const fecha = req.body.fecha;
       const hora_inicio = req.body.hora_inicio;
       const hora_fin = req.body.hora_fin;
-      const id_usuario = req.body.id_usuario;
+      
       const materia=req.body.materia
 
       const query =
         "UPDATE registro_mentoria set fecha=?,hora_inicio=?,hora_fin=?, materia=? where id_registro_mentoria=?";
-      pool.query(query, [fecha, hora_inicio, hora_fin, id,materia]);
+      pool.query(query, [fecha, hora_inicio, hora_fin,materia, id]);
       res.status(200).json({ text: "registro actualizado" });
       console.log("actualizado");
     } catch (error) {
