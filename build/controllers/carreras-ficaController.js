@@ -47,13 +47,15 @@ class CarrerasFicaController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const nombre_carrera = req.body.nombre_carrera;
-                const query = "INSERT INTO carreras_fica(nombre_carrera)VALUES (?)";
-                yield database_1.default.query(query, [nombre_carrera]);
+                const ruta_archivo_carrera = req.body.ruta_archivo_carrera;
+                const descripcion = req.body.descripcion;
+                const query = "INSERT INTO carreras_fica(nombre_carrera,ruta_archivo_carrera,descripcion)VALUES (?,?,?)";
+                yield database_1.default.query(query, [nombre_carrera, ruta_archivo_carrera, descripcion]);
                 res.status(201).json({ text: "carrera guardada" });
             }
             catch (err) {
-                res.json({ text: "Hubo un error " });
-                res.status(404).json({ text: err });
+                res.status(404).json({ text: "hubo un error" });
+                console.log(err);
             }
         });
     }
