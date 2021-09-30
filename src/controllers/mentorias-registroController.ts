@@ -11,7 +11,7 @@ class MentoriasController {
   public async list(req: Request, res: Response) {
     console.log("pasa obtner mentorias registradas");
     await pool.query(
-      "SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.nombre,u.apellido,u.carrera,m.id_usuario, m.materia from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario",
+      "SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.nombre,u.apellido,u.carrera,m.id_usuario, m.materia , m.estado_registro from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario",
       (err: any, rows: any) => {
         if (err) {
           res.status(404).json("error al cargar");
