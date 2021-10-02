@@ -25,7 +25,9 @@ import  testAptitudRoutes from "./routes/testAptitudRoute";
 import  materiasRoutes from "./routes/materiasRoutes";
 import  materiasCarreraRoutes from "./routes/materiaCarreraRoute";
 import materiasEstudianteRoute from "./routes/materiasEstudianteRoute"; 
-import solicitudMentoriaRoute from "./routes/solicitudMentoriaRoute"; 
+import solicitudMentoriaRoute from "./routes/solicitudMentoriaRoute";
+import mentorasRegistroRoutes from "./routes/mentorasRoutes";
+import mentorasRoutes from "./routes/mentorasRoutes";
 
 
 class Server {
@@ -72,6 +74,7 @@ class Server {
     this.app.use("/api/materiasCarrera",materiasCarreraRoutes);
     this.app.use("/api/materiasEstudiante",materiasEstudianteRoute);
     this.app.use("/api/solicitudesMentoria",solicitudMentoriaRoute);
+    this.app.use("/api/mentorasRegistro",mentorasRoutes);
     
   }
   start(): void {

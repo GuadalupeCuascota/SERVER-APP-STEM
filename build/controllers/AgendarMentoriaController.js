@@ -21,7 +21,7 @@ class AngerdarMentoriaController {
     // }
     list(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield database_1.default.query("select a.id_agendamiento_mentoria, r.fecha,r.hora_inicio,r.hora_fin,a.id_usuario,u.nombre,u.apellido,u.correo_electronico,t.nombre_estado_agen_mentoria,a.carrera from tipo_estado_agend_mentoria t,registro_mentoria r, agendamiento_mentorias a, usuario u where r.id_registro_mentoria=a.id_registro_mentoria and u.id_usuario=r.id_usuario and t.id_estado_agen_mentoria=a.id_estado_agen_mentoria", (err, rows) => {
+            yield database_1.default.query("select a.id_agendamiento_mentoria, r.fecha,r.hora_inicio,r.hora_fin,a.id_usuario,u.nombre,u.apellido,u.correo_electronico,t.nombre_estado_agen_mentoria, r.materia from tipo_estado_agend_mentoria t,registro_mentoria r, agendamiento_mentorias a, usuario u where r.id_registro_mentoria=a.id_registro_mentoria and u.id_usuario=r.id_usuario and t.id_estado_agen_mentoria=a.id_estado_agen_mentoria", (err, rows) => {
                 if (err) {
                     res.status(404).json("error al cargar");
                     console.log(err);
@@ -64,7 +64,7 @@ class AngerdarMentoriaController {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("PASA AQUIII");
             const { id } = req.params;
-            const registroMentorias = yield database_1.default.query("SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin, m.tipo_mentoria,m.,u.nombre,u.apellido from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario and m.id_registro_mentoria=?", [id]);
+            const registroMentorias = yield database_1.default.query("SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin, m.tipo_mentoria,m.,u.nombre,u.apellido ,m.materia from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario and m.id_registro_mentoria=?", [id]);
             console.log(registroMentorias);
             if (registroMentorias.length > 0) {
                 return res.status(200).json(registroMentorias[0]);
@@ -81,14 +81,20 @@ class AngerdarMentoriaController {
                 console.log("usuario:" + req.body.id_usuario);
                 console.log("observacio" + req.body.observacion);
                 console.log("id_estado_agen_mentoria	", req.body.id_estado_agen_mentoria);
-                const query = "INSERT INTO agendamiento_mentorias(id_registro_mentoria,observacion,id_estado_agen_mentoria	,id_usuario) VALUES (?,?,?,?)";
-                yield database_1.default.query(query, [
-                    id_registro_mentoria,
-                    observacion,
-                    id_estado_agen_mentoria,
-                    id_usuario,
-                ]);
-                res.status(201).json({ text: "mentoria agendada" });
+                const findAgendamiento = yield database_1.default.query("SELECT * FROM agendamiento_mentorias WHERE id_usuario=? and id_registro_mentoria=?", [id_usuario, id_registro_mentoria]);
+                if (findAgendamiento.length > 0) {
+                    res.status(404).json({ text: "La mentoria ya ha sido agendada" });
+                }
+                else {
+                    const query = "INSERT INTO agendamiento_mentorias(id_registro_mentoria,observacion,id_estado_agen_mentoria	,id_usuario) VALUES (?,?,?,?)";
+                    yield database_1.default.query(query, [
+                        id_registro_mentoria,
+                        observacion,
+                        id_estado_agen_mentoria,
+                        id_usuario,
+                    ]);
+                    res.status(201).json({ text: "mentoria agendada" });
+                }
             }
             catch (err) {
                 res.status(404).json({ text: "Hubo un error " });
@@ -98,10 +104,11 @@ class AngerdarMentoriaController {
     }
     delete(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log("ELIMINAR AQUI");
             try {
                 const { id } = req.params;
                 console.log("id_registro:" + id);
-                yield database_1.default.query(" DELETE FROM registro_mentoria  WHERE id_registro_mentoria=?", [id]);
+                yield database_1.default.query(" DELETE FROM agendamiento_mentorias  WHERE id_agendamiento_mentoria=?", [id]);
                 res.status(201).json({ text: "el dato fue eliminado" });
             }
             catch (error) {

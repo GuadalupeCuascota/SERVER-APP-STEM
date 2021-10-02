@@ -19,6 +19,33 @@ class MentoriasController {
     //   const usuarios = await pool.query("SELECT * FROM usuario");
     //   res.json(usuarios);
     // }
+    listMentoras(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log("pasa obtner mentoras");
+            yield database_1.default.query("SELECT DISTINCT u.id_usuario, u.nombre,u.apellido, u.carrera from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario", (err, rows) => {
+                if (err) {
+                    res.status(404).json("error al cargar");
+                    console.log(err);
+                }
+                else {
+                    res.status(200).json(rows);
+                    console.log("registro mentoras seleccionados");
+                }
+            });
+        });
+    }
+    getHorariosMentora(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log("obtener disponibilidad de horarios");
+            const { id } = req.params;
+            const horariosMentorias = yield database_1.default.query("SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.carrera, m.materia , m.estado_registro from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario and u.id_usuario=?", [id]);
+            console.log(horariosMentorias);
+            if (horariosMentorias.length > 0) {
+                return res.status(200).json(horariosMentorias);
+            }
+            res.status(404).json({ text: "El registro no existe" });
+        });
+    }
     list(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("pasa obtner mentorias registradas");
@@ -64,17 +91,18 @@ class MentoriasController {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("pasa crear registro mentoria");
             try {
-                const { fecha, hora_inicio, hora_fin, id_usuario, materia } = req.body;
+                const { fecha, hora_inicio, hora_fin, id_usuario, materia, estado_registro } = req.body;
                 console.log("fecha:" + req.body.fecha);
                 console.log("fecha:" + req.body.hora_inicio);
+                console.log("estado_registro" + req.body.estado_registro);
                 const findRegistro = yield database_1.default.query("SELECT * FROM registro_mentoria WHERE id_usuario=? and hora_inicio=? and fecha= ?", [id_usuario, hora_inicio, fecha]);
                 if (findRegistro.length > 0) {
                     res.status(404).json({ text: "Mentoria duplicada" });
                 }
                 else {
                     console.log("no existe mentoria");
-                    const query = "INSERT INTO registro_mentoria(fecha, hora_inicio, hora_fin, id_usuario, materia) VALUES (?,?,?,?,?)";
-                    yield database_1.default.query(query, [fecha, hora_inicio, hora_fin, id_usuario, materia]);
+                    const query = "INSERT INTO registro_mentoria(fecha, hora_inicio, hora_fin, id_usuario, materia,estado_registro) VALUES (?,?,?,?,?,?)";
+                    yield database_1.default.query(query, [fecha, hora_inicio, hora_fin, id_usuario, materia, estado_registro]);
                     res.status(201).json({ text: "mentoria registrada" });
                 }
             }
