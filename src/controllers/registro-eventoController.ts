@@ -5,7 +5,7 @@ import fs from "fs-extra";
 
 class EventosController {
   public async list(req: Request, res: Response): Promise<void> {
-    await pool.query("SELECT e.id_publicacion,p.titulo,u.nombre,u.apellido, t.nombre_tipo_evento, t.id_tipo_evento FROM evento e,publicacion p, usuario u, tipo_evento t WHERE e.id_publicacion=p.id_publicacion and u.id_usuario=e.id_usuario and t.id_tipo_evento=e.id_tipo_evento", (err: any, rows: any) => {
+    await pool.query("SELECT e.id_publicacion,p.titulo,u.nombre,u.apellido, t.nombre_tipo_evento, e.id_tipo_evento FROM evento e,publicacion p, usuario u, tipo_evento t WHERE e.id_publicacion=p.id_publicacion and u.id_usuario=e.id_usuario and t.id_tipo_evento=e.id_tipo_evento", (err: any, rows: any) => {
       if (err) {
         res.status(404).json("error al cargar");
         console.log(err);
