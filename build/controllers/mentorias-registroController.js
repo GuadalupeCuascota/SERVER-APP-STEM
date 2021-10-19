@@ -22,7 +22,7 @@ class MentoriasController {
     listMentoras(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("pasa obtner mentoras");
-            yield database_1.default.query("SELECT DISTINCT u.id_usuario, u.nombre,u.apellido, u.carrera from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario", (err, rows) => {
+            yield database_1.default.query("SELECT DISTINCT u.id_usuario, u.nombre,u.apellido, u.carrera from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario and m.fecha>=CURDATE()", (err, rows) => {
                 if (err) {
                     res.status(404).json("error al cargar");
                     console.log(err);
@@ -38,7 +38,7 @@ class MentoriasController {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("obtener disponibilidad de horarios");
             const { id } = req.params;
-            const horariosMentorias = yield database_1.default.query("SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.carrera, m.materia , m.estado_registro from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario and u.id_usuario=?", [id]);
+            const horariosMentorias = yield database_1.default.query("SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.carrera, m.materia , m.estado_registro from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario and u.id_usuario=? and and m.fecha>=CURDATE()", [id]);
             console.log(horariosMentorias);
             if (horariosMentorias.length > 0) {
                 return res.status(200).json(horariosMentorias);
@@ -49,7 +49,7 @@ class MentoriasController {
     list(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("pasa obtner mentorias registradas");
-            yield database_1.default.query("SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.nombre,u.apellido,u.carrera,m.id_usuario, m.materia , m.estado_registro from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario", (err, rows) => {
+            yield database_1.default.query("SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.nombre,u.apellido,u.carrera,m.id_usuario, m.materia , m.estado_registro from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario ORDER BY fecha_registro DESC", (err, rows) => {
                 if (err) {
                     res.status(404).json("error al cargar");
                     console.log(err);
@@ -123,6 +123,25 @@ class MentoriasController {
             catch (error) {
                 res.status(404).json({ text: "Hubo un error " });
                 console.log("no se puede eliminar" + error);
+            }
+        });
+    }
+    updateRegistroMentoria(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log("pasa actualizar:");
+            try {
+                const { id } = req.params;
+                console.log("el id", id);
+                const estado_registro = req.body.estado_registro;
+                console.log("el estado", estado_registro);
+                const query = "UPDATE registro_mentoria SET estado_registro=? WHERE id_registro_mentoria=?";
+                database_1.default.query(query, [estado_registro, id]);
+                res.status(200).json({ text: "registro actualizado" });
+                console.log("actualizado");
+            }
+            catch (error) {
+                console.log("error", error);
+                res.status(404).json({ text: "Hubo un error" });
             }
         });
     }

@@ -12,7 +12,7 @@ class MentoriasController {
   public async listMentoras(req: Request, res: Response) {
     console.log("pasa obtner mentoras");
     await pool.query(
-      "SELECT DISTINCT u.id_usuario, u.nombre,u.apellido, u.carrera from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario",
+      "SELECT DISTINCT u.id_usuario, u.nombre,u.apellido, u.carrera from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario and m.fecha>=CURDATE()",
       (err: any, rows: any) => {
         if (err) {
           res.status(404).json("error al cargar");
@@ -30,7 +30,7 @@ class MentoriasController {
     console.log("obtener disponibilidad de horarios");
     const { id } = req.params;
     const horariosMentorias= await pool.query(
-      "SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.carrera, m.materia , m.estado_registro from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario and u.id_usuario=?",
+      "SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.carrera, m.materia , m.estado_registro from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario and u.id_usuario=? and and m.fecha>=CURDATE()",
       [id]
     );
 
@@ -45,7 +45,7 @@ class MentoriasController {
   public async list(req: Request, res: Response) {
     console.log("pasa obtner mentorias registradas");
     await pool.query(
-      "SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.nombre,u.apellido,u.carrera,m.id_usuario, m.materia , m.estado_registro from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario",
+      "SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.nombre,u.apellido,u.carrera,m.id_usuario, m.materia , m.estado_registro from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario ORDER BY fecha_registro DESC",
       (err: any, rows: any) => {
         if (err) {
           res.status(404).json("error al cargar");
@@ -131,6 +131,26 @@ class MentoriasController {
       console.log("no se puede eliminar" + error);
     }
   }
+  public async updateRegistroMentoria(req: Request, res: Response) {
+    
+    console.log("pasa actualizar:");
+    try {
+      const { id } = req.params;
+      console.log("el id",id)
+      const estado_registro = req.body.estado_registro;
+     console.log("el estado",estado_registro)
+
+      const query =
+        "UPDATE registro_mentoria SET estado_registro=? WHERE id_registro_mentoria=?";
+      pool.query(query, [estado_registro, id]);
+      res.status(200).json({ text: "registro actualizado" });
+      console.log("actualizado");
+    } catch (error) {
+      console.log("error", error);
+      res.status(404).json({ text: "Hubo un error" });
+    }
+  }
+
 
   public async update(req: Request, res: Response) {
     console.log("fecha:" + req.body.fecha);

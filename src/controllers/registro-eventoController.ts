@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
 import pool from "../database";
-import path from "path";
-import fs from "fs-extra";
 
 class EventosController {
   public async list(req: Request, res: Response): Promise<void> {

@@ -90,6 +90,7 @@ class AngerdarMentoriaController {
       }else{
         const query =
         "INSERT INTO agendamiento_mentorias(id_registro_mentoria,observacion,id_estado_agen_mentoria	,id_usuario) VALUES (?,?,?,?)";
+        
       await pool.query(query, [
         id_registro_mentoria,
         observacion,
