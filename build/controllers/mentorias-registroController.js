@@ -38,7 +38,7 @@ class MentoriasController {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("obtener disponibilidad de horarios");
             const { id } = req.params;
-            const horariosMentorias = yield database_1.default.query("SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.carrera, m.materia , m.estado_registro from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario and u.id_usuario=? and and m.fecha>=CURDATE()", [id]);
+            const horariosMentorias = yield database_1.default.query("SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.carrera, m.materia , m.estado_registro from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario and u.id_usuario=? and  m.fecha>=CURDATE()", [id]);
             console.log(horariosMentorias);
             if (horariosMentorias.length > 0) {
                 return res.status(200).json(horariosMentorias);

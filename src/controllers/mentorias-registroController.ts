@@ -30,7 +30,7 @@ class MentoriasController {
     console.log("obtener disponibilidad de horarios");
     const { id } = req.params;
     const horariosMentorias= await pool.query(
-      "SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.carrera, m.materia , m.estado_registro from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario and u.id_usuario=? and and m.fecha>=CURDATE()",
+      "SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.carrera, m.materia , m.estado_registro from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario and u.id_usuario=? and  m.fecha>=CURDATE()",
       [id]
     );
 
