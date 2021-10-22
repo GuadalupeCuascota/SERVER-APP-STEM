@@ -45,7 +45,22 @@ class MentoriasController {
   public async list(req: Request, res: Response) {
     console.log("pasa obtner mentorias registradas");
     await pool.query(
-      "SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.nombre,u.apellido,u.carrera,m.id_usuario, m.materia , m.estado_registro from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario ORDER BY fecha_registro DESC",
+      "SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.nombre,u.apellido,u.carrera,m.id_usuario, m.materia ,ts.nombre_estado_mentoria from registro_mentoria m, usuario u, tipo_estado_mentoria ts WHERE m.id_usuario=u.id_usuario and ts.id_estado_mentoria=m.id_estado_mentoria ORDER BY fecha_registro DESC",
+      (err: any, rows: any) => {
+        if (err) {
+          res.status(404).json("error al cargar");
+          console.log(err);
+        } else {
+          res.status(200).json(rows);
+          console.log("registro de mentorias registradas seleccionados");
+        }
+      }
+    );
+  }
+  public async listporTipo(req: Request, res: Response) {
+    console.log("pasa obtner mentorias registradas");
+    await pool.query(
+      "SELECT ts.nombre_estado_mentoria as 'Mes',COUNT(ts.id_estado_mentoria) as 'NroEstudiantes' from registro_mentoria m, usuario u, tipo_estado_mentoria ts WHERE m.id_usuario=u.id_usuario and ts.id_estado_mentoria=m.id_estado_mentoria group by (ts.nombre_estado_mentoria)",
       (err: any, rows: any) => {
         if (err) {
           res.status(404).json("error al cargar");

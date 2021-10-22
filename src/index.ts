@@ -28,7 +28,7 @@ import materiasEstudianteRoute from "./routes/materiasEstudianteRoute";
 import solicitudMentoriaRoute from "./routes/solicitudMentoriaRoute";
 import mentorasRegistroRoutes from "./routes/mentorasRoutes";
 import mentorasRoutes from "./routes/mentorasRoutes";
-
+import TipoMentoriasRoute from "./routes/TipoMentoriasRoute";
 
 class Server {
   public app: Application;
@@ -75,7 +75,8 @@ class Server {
     this.app.use("/api/materiasEstudiante",materiasEstudianteRoute);
     this.app.use("/api/solicitudesMentoria",solicitudMentoriaRoute);
     this.app.use("/api/mentorasRegistro",mentorasRoutes);
-    
+
+    this.app.use("/api/tipoMentoria",TipoMentoriasRoute);
   }
   start(): void {
     //método para inicializar el servidor
