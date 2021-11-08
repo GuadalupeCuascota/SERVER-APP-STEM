@@ -32,6 +32,7 @@ const materiasEstudianteRoute_1 = __importDefault(require("./routes/materiasEstu
 const solicitudMentoriaRoute_1 = __importDefault(require("./routes/solicitudMentoriaRoute"));
 const mentorasRoutes_1 = __importDefault(require("./routes/mentorasRoutes"));
 const TipoMentoriasRoute_1 = __importDefault(require("./routes/TipoMentoriasRoute"));
+const preguntasCarreraRoute_1 = __importDefault(require("./routes/preguntasCarreraRoute"));
 class Server {
     constructor() {
         //crear el método constructor
@@ -73,6 +74,7 @@ class Server {
         this.app.use("/api/materiasEstudiante", materiasEstudianteRoute_1.default);
         this.app.use("/api/solicitudesMentoria", solicitudMentoriaRoute_1.default);
         this.app.use("/api/mentorasRegistro", mentorasRoutes_1.default);
+        this.app.use("/api/preguntasCarrera", preguntasCarreraRoute_1.default);
         this.app.use("/api/tipoMentoria", TipoMentoriasRoute_1.default);
     }
     start() {

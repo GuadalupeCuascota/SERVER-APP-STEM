@@ -25,11 +25,28 @@ class TestAptitudController {
             console.log(roles);
         });
     }
+    listPeguntasCarrera(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // const roles = await pool.query("SELECT * FROM rol");
+            // res.json(roles);
+            yield database_1.default.query("SELECT * FROM pregunta_ingenieria ORDER BY id_pregunta ASC", (err, rows) => {
+                if (err) {
+                    res.json("error al cargar");
+                    console.log(err);
+                }
+                else {
+                    res.json(rows);
+                    console.log(rows);
+                    console.log("Datos seleccionados probando1");
+                }
+            });
+        });
+    }
     list(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             // const roles = await pool.query("SELECT * FROM rol");
             // res.json(roles);
-            yield database_1.default.query("SELECT p.id_pregunta, p.pregunta, c.id_carrera FROM pregunta p , carreras_fica c where p.id_carrera=c.id_carrera ORDER BY p.id_pregunta ASC", (err, rows) => {
+            yield database_1.default.query("SELECT p.id_pregunta, p.pregunta, c.id_carrera FROM pregunta p , carreras_fica c where p.id_carrera=c.id_carrera  ORDER BY p.id_pregunta ASC", (err, rows) => {
                 if (err) {
                     res.json("error al cargar");
                     console.log(err);
