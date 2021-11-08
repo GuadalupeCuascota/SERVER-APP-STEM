@@ -17,7 +17,7 @@ class TestAptitudController {
   public async list(req: Request, res: Response) {
     // const roles = await pool.query("SELECT * FROM rol");
     // res.json(roles);
-    await pool.query("SELECT p.id_pregunta, p.pregunta, c.nombre_carrera FROM pregunta p , carreras_fica c where p.id_carrera=c.id_carrera", (err: any, rows: any) => {
+    await pool.query("SELECT p.id_pregunta, p.pregunta, c.id_carrera FROM pregunta p , carreras_fica c where p.id_carrera=c.id_carrera ORDER BY p.id_pregunta ASC", (err: any, rows: any) => {
       if (err) {
         res.json("error al cargar");
 
