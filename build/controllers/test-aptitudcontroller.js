@@ -29,7 +29,7 @@ class TestAptitudController {
         return __awaiter(this, void 0, void 0, function* () {
             // const roles = await pool.query("SELECT * FROM rol");
             // res.json(roles);
-            yield database_1.default.query("SELECT o.opcion, o.opcion2,o.opcion3, p.pregunta from opciones o, pregunta p where o.id_pregunta=p.id_pregunta", (err, rows) => {
+            yield database_1.default.query("SELECT p.id_pregunta, p.pregunta, c.nombre_carrera FROM pregunta p , carreras_fica c where p.id_carrera=c.id_carrera", (err, rows) => {
                 if (err) {
                     res.json("error al cargar");
                     console.log(err);
