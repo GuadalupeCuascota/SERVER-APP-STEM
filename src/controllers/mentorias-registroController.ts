@@ -3,16 +3,12 @@ import { Request, Response } from "express";
 import pool from "../database";
 
 class MentoriasController {
-  // public async list(req: Request, res: Response) {
-  //   const usuarios = await pool.query("SELECT * FROM usuario");
-  //   res.json(usuarios);
-  // }
 
-
-  public async listMentoras(req: Request, res: Response) {
+ public async listMentoras(req: Request, res: Response) {
     console.log("pasa obtner mentoras");
     await pool.query(
       "SELECT DISTINCT u.id_usuario, u.nombre,u.apellido, u.carrera from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario and m.fecha>=CURDATE()",
+      
       (err: any, rows: any) => {
         if (err) {
           res.status(404).json("error al cargar");
@@ -30,7 +26,7 @@ class MentoriasController {
     console.log("obtener disponibilidad de horarios");
     const { id } = req.params;
     const horariosMentorias= await pool.query(
-      "SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.carrera, m.materia , m.estado_registro from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario and u.id_usuario=? and  m.fecha>=CURDATE()",
+      "SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.carrera, m.materia , m.id_estado_mentoria from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario and u.id_usuario=? and  m.fecha>=CURDATE()",
       [id]
     );
 
@@ -109,10 +105,10 @@ class MentoriasController {
     console.log("pasa crear registro mentoria");
 
     try {
-      const { fecha, hora_inicio, hora_fin, id_usuario,materia, estado_registro} = req.body;
+      const { fecha, hora_inicio, hora_fin, id_usuario,materia, id_estado_mentoria} = req.body;
       console.log("fecha:" + req.body.fecha);
       console.log("fecha:" + req.body.hora_inicio);
-      console.log("estado_registro"+req.body.estado_registro)
+      console.log("estado_registro"+req.body.id_estado_mentoria)
       const findRegistro = await pool.query(
         "SELECT * FROM registro_mentoria WHERE id_usuario=? and hora_inicio=? and fecha= ?",
         [id_usuario, hora_inicio, fecha]
@@ -123,8 +119,8 @@ class MentoriasController {
       } else {
         console.log("no existe mentoria");
         const query =
-          "INSERT INTO registro_mentoria(fecha, hora_inicio, hora_fin, id_usuario, materia,estado_registro) VALUES (?,?,?,?,?,?)";
-        await pool.query(query, [fecha, hora_inicio, hora_fin, id_usuario,materia,estado_registro]);
+          "INSERT INTO registro_mentoria(fecha, hora_inicio, hora_fin, id_usuario, materia,id_estado_mentoria) VALUES (?,?,?,?,?,?)";
+        await pool.query(query, [fecha, hora_inicio, hora_fin, id_usuario,materia,id_estado_mentoria]);
         res.status(201).json({ text: "mentoria registrada" });
       }
     } catch (err) {
@@ -152,12 +148,12 @@ class MentoriasController {
     try {
       const { id } = req.params;
       console.log("el id",id)
-      const estado_registro = req.body.estado_registro;
-     console.log("el estado",estado_registro)
+      const id_estado_mentoria = req.body.id_estado_mentoria;
+     console.log("el estado",id_estado_mentoria)
 
       const query =
-        "UPDATE registro_mentoria SET estado_registro=? WHERE id_registro_mentoria=?";
-      pool.query(query, [estado_registro, id]);
+        "UPDATE registro_mentoria SET id_estado_mentoria=? WHERE id_registro_mentoria=?";
+      pool.query(query, [id_estado_mentoria, id]);
       res.status(200).json({ text: "registro actualizado" });
       console.log("actualizado");
     } catch (error) {

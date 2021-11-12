@@ -15,10 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.mentoriasController = void 0;
 const database_1 = __importDefault(require("../database"));
 class MentoriasController {
-    // public async list(req: Request, res: Response) {
-    //   const usuarios = await pool.query("SELECT * FROM usuario");
-    //   res.json(usuarios);
-    // }
     listMentoras(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("pasa obtner mentoras");
@@ -38,7 +34,7 @@ class MentoriasController {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("obtener disponibilidad de horarios");
             const { id } = req.params;
-            const horariosMentorias = yield database_1.default.query("SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.carrera, m.materia , m.estado_registro from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario and u.id_usuario=? and  m.fecha>=CURDATE()", [id]);
+            const horariosMentorias = yield database_1.default.query("SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.carrera, m.materia , m.id_estado_mentoria from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario and u.id_usuario=? and  m.fecha>=CURDATE()", [id]);
             console.log(horariosMentorias);
             if (horariosMentorias.length > 0) {
                 return res.status(200).json(horariosMentorias);
@@ -106,18 +102,18 @@ class MentoriasController {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("pasa crear registro mentoria");
             try {
-                const { fecha, hora_inicio, hora_fin, id_usuario, materia, estado_registro } = req.body;
+                const { fecha, hora_inicio, hora_fin, id_usuario, materia, id_estado_mentoria } = req.body;
                 console.log("fecha:" + req.body.fecha);
                 console.log("fecha:" + req.body.hora_inicio);
-                console.log("estado_registro" + req.body.estado_registro);
+                console.log("estado_registro" + req.body.id_estado_mentoria);
                 const findRegistro = yield database_1.default.query("SELECT * FROM registro_mentoria WHERE id_usuario=? and hora_inicio=? and fecha= ?", [id_usuario, hora_inicio, fecha]);
                 if (findRegistro.length > 0) {
                     res.status(404).json({ text: "Mentoria duplicada" });
                 }
                 else {
                     console.log("no existe mentoria");
-                    const query = "INSERT INTO registro_mentoria(fecha, hora_inicio, hora_fin, id_usuario, materia,estado_registro) VALUES (?,?,?,?,?,?)";
-                    yield database_1.default.query(query, [fecha, hora_inicio, hora_fin, id_usuario, materia, estado_registro]);
+                    const query = "INSERT INTO registro_mentoria(fecha, hora_inicio, hora_fin, id_usuario, materia,id_estado_mentoria) VALUES (?,?,?,?,?,?)";
+                    yield database_1.default.query(query, [fecha, hora_inicio, hora_fin, id_usuario, materia, id_estado_mentoria]);
                     res.status(201).json({ text: "mentoria registrada" });
                 }
             }
@@ -147,10 +143,10 @@ class MentoriasController {
             try {
                 const { id } = req.params;
                 console.log("el id", id);
-                const estado_registro = req.body.estado_registro;
-                console.log("el estado", estado_registro);
-                const query = "UPDATE registro_mentoria SET estado_registro=? WHERE id_registro_mentoria=?";
-                database_1.default.query(query, [estado_registro, id]);
+                const id_estado_mentoria = req.body.id_estado_mentoria;
+                console.log("el estado", id_estado_mentoria);
+                const query = "UPDATE registro_mentoria SET id_estado_mentoria=? WHERE id_registro_mentoria=?";
+                database_1.default.query(query, [id_estado_mentoria, id]);
                 res.status(200).json({ text: "registro actualizado" });
                 console.log("actualizado");
             }

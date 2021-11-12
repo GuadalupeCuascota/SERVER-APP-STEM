@@ -4,7 +4,7 @@ import keys from './keys';
 
 
 const pool=mysql.createPool(keys.database);
-pool.getConnection() //probar la conexión
+pool.getConnection() 
 
 .then(connection=>{
    

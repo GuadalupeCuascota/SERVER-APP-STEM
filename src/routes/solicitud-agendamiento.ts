@@ -9,8 +9,10 @@ constructor(){
 this.config();
 }
 config(): void{
-this.router.get('/',agendarMentoriaController.listsolicitudes);
+this.router.get('/',agendarMentoriaController.list);
+
 this.router.put('/:id',agendarMentoriaController.update);
+this.router.get('/:id',agendarMentoriaController.listsolicitudesPorRegistro);
 
 
 }

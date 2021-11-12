@@ -15,10 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.agendarMentoriaController = void 0;
 const database_1 = __importDefault(require("../database"));
 class AngerdarMentoriaController {
-    // public async list(req: Request, res: Response) {
-    //   const usuarios = await pool.query("SELECT * FROM usuario");
-    //   res.json(usuarios);
-    // }
     list(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             yield database_1.default.query("select a.id_agendamiento_mentoria, r.fecha,r.hora_inicio,r.hora_fin,a.id_usuario,u.nombre,u.apellido,u.correo_electronico,t.nombre_estado_agen_mentoria, r.materia from tipo_estado_agend_mentoria t,registro_mentoria r, agendamiento_mentorias a, usuario u where r.id_registro_mentoria=a.id_registro_mentoria and u.id_usuario=r.id_usuario and t.id_estado_agen_mentoria=a.id_estado_agen_mentoria", (err, rows) => {
@@ -33,19 +29,28 @@ class AngerdarMentoriaController {
             });
         });
     }
-    listsolicitudes(req, res) {
+    getOne(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("PASA AQUI");
-            yield database_1.default.query("select a.id_agendamiento_mentoria ,r.fecha,r.hora_inicio,r.hora_fin,r.id_usuario,u.nombre,u.apellido,u.correo_electronico,t.nombre_estado_agen_mentoria,r.materia from tipo_estado_agend_mentoria t, registro_mentoria r, agendamiento_mentorias a, usuario u where r.id_registro_mentoria=a.id_registro_mentoria and u.id_usuario=a.id_usuario and t.id_estado_agen_mentoria=a.id_estado_agen_mentoria ", (err, rows) => {
-                if (err) {
-                    res.status(404).json("error al cargar");
-                    console.log(err);
-                }
-                else {
-                    res.status(200).json(rows);
-                    console.log(rows);
-                }
-            });
+            console.log("PASA AQUIII");
+            const { id } = req.params;
+            const registroMentorias = yield database_1.default.query("SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin, m.tipo_mentoria,m.,u.nombre,u.apellido ,m.materia from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario and m.id_registro_mentoria=?", [id]);
+            console.log(registroMentorias);
+            if (registroMentorias.length > 0) {
+                return res.status(200).json(registroMentorias[0]);
+            }
+            res.status(404).json({ text: "El registro no existe" });
+        });
+    }
+    listsolicitudesPorRegistro(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log("LIST SOLICITUDES");
+            const { id } = req.params;
+            const solicitudesPorRegistroMentoria = yield database_1.default.query("select a.id_agendamiento_mentoria ,r.fecha,r.hora_inicio,r.hora_fin,r.id_usuario,u.nombre,u.apellido,u.correo_electronico,t.nombre_estado_agen_mentoria,r.materia from tipo_estado_agend_mentoria t, registro_mentoria r, agendamiento_mentorias a, usuario u where r.id_registro_mentoria=a.id_registro_mentoria and u.id_usuario=a.id_usuario and t.id_estado_agen_mentoria=a.id_estado_agen_mentoria and r.id_registro_mentoria=?", [id]);
+            console.log(solicitudesPorRegistroMentoria);
+            if (solicitudesPorRegistroMentoria.length > 0) {
+                return res.status(200).json(solicitudesPorRegistroMentoria);
+            }
+            res.status(404).json({ text: "El registro no existeee" });
         });
     }
     getMentoriasUsuario(req, res) {
@@ -60,39 +65,47 @@ class AngerdarMentoriaController {
             res.status(404).json({ text: "En este momento no existe mentorias disponibles" });
         });
     }
-    getOne(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            console.log("PASA AQUIII");
-            const { id } = req.params;
-            const registroMentorias = yield database_1.default.query("SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin, m.tipo_mentoria,m.,u.nombre,u.apellido ,m.materia from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario and m.id_registro_mentoria=?", [id]);
-            console.log(registroMentorias);
-            if (registroMentorias.length > 0) {
-                return res.status(200).json(registroMentorias[0]);
+    updateEstadoRegistroMentoria(id_registro_mentoria, nombre_estado_mentoria) {
+        console.log("PASA AQUI ACTUALIZAR ESTADO");
+        try {
+            console.log("id: " + id_registro_mentoria);
+            console.log("id: " + nombre_estado_mentoria);
+            if (id_registro_mentoria) {
+                const query = "UPDATE registro_mentoria set id_estado_mentoria=? where id_registro_mentoria=?";
+                database_1.default.query(query, [
+                    nombre_estado_mentoria, id_registro_mentoria
+                ]);
+                return console.log("actualizado");
             }
-            res.status(404).json({ text: "El registro no existe" });
-        });
+            else {
+                return console.log("no existe id registro mentoria");
+            }
+        }
+        catch (err) {
+        }
     }
     create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("pasa crear mentoria");
+            console.log("pasa agendar mentoria");
             try {
                 const { id_registro_mentoria, observacion, id_estado_agen_mentoria, id_usuario, } = req.body;
                 console.log("registro:" + req.body.id_registro_mentoria);
                 console.log("usuario:" + req.body.id_usuario);
                 console.log("observacio" + req.body.observacion);
-                console.log("id_estado_agen_mentoria	", req.body.id_estado_agen_mentoria);
+                console.log("id_estado_agen_mentoria", req.body.id_estado_agen_mentoria);
                 const findAgendamiento = yield database_1.default.query("SELECT * FROM agendamiento_mentorias WHERE id_usuario=? and id_registro_mentoria=?", [id_usuario, id_registro_mentoria]);
                 if (findAgendamiento.length > 0) {
                     res.status(404).json({ text: "La mentoria ya ha sido agendada" });
                 }
                 else {
-                    const query = "INSERT INTO agendamiento_mentorias(id_registro_mentoria,observacion,id_estado_agen_mentoria	,id_usuario) VALUES (?,?,?,?)";
+                    const query = "INSERT INTO agendamiento_mentorias(id_registro_mentoria,observacion,id_estado_agen_mentoria,id_usuario) VALUES (?,?,?,?)";
                     yield database_1.default.query(query, [
                         id_registro_mentoria,
                         observacion,
                         id_estado_agen_mentoria,
                         id_usuario,
                     ]);
+                    // this.updateEstadoRegistroMentoria(nombre_estado_mentoria,id_registro_mentoria);
                     res.status(201).json({ text: "mentoria agendada" });
                 }
             }
