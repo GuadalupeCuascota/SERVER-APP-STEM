@@ -6,7 +6,7 @@ class SolicitudMentoriaController {
 
   public async list(req: Request, res: Response) {
   
-    await pool.query("SELECT m.nombre_materia , sm.tema, u.nombre ,u.apellido,u.carrera from materia_carrera mc, solicitud_mentoria sm, materia m, carreras_fica c, usuario u where mc.id_materia_carrera=sm.id_materia_carrera  and mc.id_materia=m.id_materia and mc.id_carrera=c.id_carrera and u.id_usuario=sm.id_usuario ", (err: any, rows: any) => {
+    await pool.query("SELECT sm.id_solicitud_mentoria, sm.materia,sm.tema, u.nombre ,u.apellido,u.correo_electronico,u.carrera,sm.fecha_solicitud_mentoria from solicitud_mentoria sm, usuario u where u.id_usuario=sm.id_usuario ORDER BY sm.fecha_solicitud_mentoria DESC ", (err: any, rows: any) => {
       if (err) {
         res.status(404).json("error al cargar");
         console.log(err)
@@ -18,29 +18,30 @@ class SolicitudMentoriaController {
   }
 
   public async getOne(req: Request, res: Response) {
-    // pool.query("INSERT INTO rol set ?", [req.body]);
+   
 
     const { id } = req.params;
-    const solicitudes = await pool.query("SELECT m.nombre_materia , sm.tema, u.nombre ,u.apellido,u.carrera from materia_carrera mc, solicitud_mentoria sm, materia m, carreras_fica c, usuario u where mc.id_materia_carrera=sm.id_materia_carrera  and mc.id_materia=m.id_materia and mc.id_carrera=c.id_carrera and u.id_usuario=sm.id_usuario and u.id_usuario=?", [id]);
-    console.log(solicitudes);
+    const solicitudes = await pool.query("SELECT sm.id_solicitud_mentoria,sm.materia,sm.tema, u.nombre ,u.apellido,u.carrera, sm.fecha_solicitud_mentoria from solicitud_mentoria sm, usuario u where u.id_usuario=sm.id_usuario and u.id_usuario=?", [id]);                                                            
     if (solicitudes.length > 0) {
-      return res.json(solicitudes);
+      res.status(200).json(solicitudes);
+    }else{
+      res.status(404).json("No existe la mentoria");
     }
-    res.json({ text: "la materia no existe" });
+    
+   
   }
   
 
   public   async create(req: Request, res: Response  ) {
     console.log("ENTRA")
     try{
-   const nombre_materia=req.body.nombre_materia;
-   const nombre_carrera=req.body.nombre_carrera
+   const materia=req.body.materia;
    const tema=req.body.tema;
    const id_usuario=req.body.id_usuario;
    console.log("id_usuario",id_usuario)
 
-   const query="INSERT into solicitud_mentoria (id_materia_carrera,tema,id_usuario) VALUES ((select mc.id_materia_carrera from materia_carrera mc, materia m , carreras_fica c where m.nombre_materia=? and m.id_materia=mc.id_materia and c.nombre_carrera=? and mc.id_carrera=c.id_carrera),?,?)";
-    await pool.query(query,[nombre_materia,nombre_carrera,tema,id_usuario]);
+   const query="INSERT into solicitud_mentoria (materia,tema,id_usuario) VALUES (?,?,?)";
+    await pool.query(query,[materia,tema,id_usuario]);
     
     res.status(201).json({ text: " Guardado" });
     }catch(err){
@@ -55,7 +56,7 @@ class SolicitudMentoriaController {
    {
     try{
       const {id} = req.params;
-      await pool.query(" DELETE FROM materia WHERE id_materia=?", [id]);
+      await pool.query(" DELETE FROM `solicitud_mentoria` WHERE id_solicitud_mentoria=?", [id]);
      
       res.status(201).json({ text: "materia eliminada" });
 
