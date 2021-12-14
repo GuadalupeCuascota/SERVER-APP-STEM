@@ -3,7 +3,6 @@ import { Request, Response } from "express";
 import pool from "../database";
 
 class ArchivosController {
-  
   public async listP(req: Request, res: Response) {
     await pool.query(
       "SELECT u.id_publicacion, u.titulo, u.nombre_perfil, u.fecha_publicacion,u.descripcion,u.enlace,u.profesion,u.estado_profesion,u.ruta_archivo,u.tipo_archivo,u.id_tipo_publicacion,u.id_usuario, u.id_estado_publicacion, r.nombre_carrera from publicacion u, carreras_fica r WHERE r.id_carrera=u.id_carrera ORDER BY fecha_publicacion DESC",
@@ -72,19 +71,17 @@ class ArchivosController {
   //     } = req.body;
 
   //     const result=await cloudinary.v2.uploader.upload(req.file.path)
-     
+
   //     const query =
   //       "INSERT INTO publicacion (titulo,nombre_perfil,descripcion,enlace,profesion,estado_profesion,ruta_archivo,public_id_archivo,tipo_archivo,id_tipo_publicacion,id_usuario,id_estado_publicacion,id_carrera) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,(select id_carrera from carreras_fica where nombre_carrera=?))";
 
   //     if (req.file) {
   //       console.log("ESISTE ARCHIVO");
 
-       
   //       const tipo_archivo = req.file.mimetype;
   //       const ruta_archivo=result.ruta_archivo;
   //       const public_id=result.public_id
 
-       
   //       await pool.query(query, [
   //         titulo,
   //         nombre_perfil,
@@ -128,7 +125,7 @@ class ArchivosController {
   // }
 
   public async create(req: Request, res: Response) {
-  
+      console.log("PASA CREAR")
     const cloudinary = require("cloudinary");
 
     cloudinary.config({
@@ -152,10 +149,10 @@ class ArchivosController {
         id_carrera,
       } = req.body;
 
-
-      if(req.file.mimetype=="video/mp4"){
-        await cloudinary.v2.uploader.upload(req.file.path
-          ,
+      console.log("id carrera", id_carrera);
+      if (req.file.mimetype == "video/mp4") {
+        await cloudinary.v2.uploader.upload(
+          req.file.path,
           {
             resource_type: "video",
             // public_id: "myfolder/mysubfolder/dog_closeup",
@@ -171,30 +168,78 @@ class ArchivosController {
               },
             ],
             eager_async: true,
-            eager_notification_url: "https://mysite.example.com/notify_endpoint",
+            eager_notification_url:
+              "https://mysite.example.com/notify_endpoint",
           },
           function (error: any, result: any) {
             console.log(result, error);
-            
-          const ruta_archivo = result.secure_url;
-          const public_id = result.public_id;
-        
-  
-          console.log("ruta archivo" ,ruta_archivo)
-          console.log("poublic id" ,public_id)
-  
-  
-          const query =
+
+            const ruta_archivo = result.secure_url;
+            const public_id = result.public_id;
+
+            console.log("ruta archivo", ruta_archivo);
+            console.log("poublic id", public_id);
+
+            const query =
+              "INSERT INTO publicacion (titulo,nombre_perfil,descripcion,enlace,profesion,estado_profesion,ruta_archivo,public_id_archivo,tipo_archivo,id_tipo_publicacion,id_usuario,id_estado_publicacion,id_carrera) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,(select id_carrera from carreras_fica where nombre_carrera=?))";
+
+            if (req.file) {
+              console.log("ESISTE ARCHIVO");
+
+              const tipo_archivo = req.file.mimetype;
+              console.log(ruta_archivo);
+              console.log(req.file.mimetype);
+              pool.query(query, [
+                titulo,
+                nombre_perfil,
+                descripcion,
+                enlace,
+                profesion,
+                estado_profesion,
+                ruta_archivo,
+                public_id,
+                tipo_archivo,
+                id_tipo_publicacion,
+                id_usuario,
+                id_estado_publicacion,
+                id_carrera,
+              ]);
+              fs.unlink(req.file.path); //eliminar de archivo de la ruta local
+              res.status(201).json({ text: "Archivo guardado" });
+            } else {
+              const query1 =
+                "INSERT INTO publicacion (titulo,nombre_perfil,descripcion,enlace,profesion,estado_profesion,id_tipo_publicacion,id_usuario,id_estado_publicacion,id_carrera) VALUES (?,?,?,?,?,?,?,?,?,(select id_carrera from carreras_fica where nombre_carrera=?))";
+              console.log("no tiene archivo");
+
+              pool.query(query1, [
+                titulo,
+                nombre_perfil,
+                descripcion,
+                enlace,
+                profesion,
+                estado_profesion,
+                id_tipo_publicacion,
+                id_usuario,
+                id_estado_publicacion,
+                id_carrera,
+              ]);
+              res.status(201).json({ text: "Archivo guardado" });
+            }
+          }
+        );
+      } else {
+        const result = await cloudinary.v2.uploader.upload(req.file.path);
+
+        console.log(result);
+        const tipo_archivo = req.file.mimetype;
+        const ruta_archivo = result.secure_url;
+        const public_id = result.public_id;
+        console.log("ruta_archivo", ruta_archivo);
+        const query =
           "INSERT INTO publicacion (titulo,nombre_perfil,descripcion,enlace,profesion,estado_profesion,ruta_archivo,public_id_archivo,tipo_archivo,id_tipo_publicacion,id_usuario,id_estado_publicacion,id_carrera) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,(select id_carrera from carreras_fica where nombre_carrera=?))";
-  
         if (req.file) {
-          console.log("ESISTE ARCHIVO");
-  
-         
-          const tipo_archivo = req.file.mimetype;
-          console.log(ruta_archivo);
-          console.log(req.file.mimetype);
-           pool.query(query, [
+          console.log("EXISTE ARCHIVO");
+          await pool.query(query, [
             titulo,
             nombre_perfil,
             descripcion,
@@ -209,14 +254,15 @@ class ArchivosController {
             id_estado_publicacion,
             id_carrera,
           ]);
-           fs.unlink(req.file.path); //eliminar de archivo de la ruta local
+          console.log("id carrera", id_carrera);
+          await fs.unlink(req.file.path); //eliminar de archivo de la ruta local
           res.status(201).json({ text: "Archivo guardado" });
         } else {
           const query1 =
             "INSERT INTO publicacion (titulo,nombre_perfil,descripcion,enlace,profesion,estado_profesion,id_tipo_publicacion,id_usuario,id_estado_publicacion,id_carrera) VALUES (?,?,?,?,?,?,?,?,?,(select id_carrera from carreras_fica where nombre_carrera=?))";
           console.log("no tiene archivo");
-  
-          pool.query(query1, [
+
+          await pool.query(query1, [
             titulo,
             nombre_perfil,
             descripcion,
@@ -230,71 +276,12 @@ class ArchivosController {
           ]);
           res.status(201).json({ text: "Archivo guardado" });
         }
-          }
-  
-  
-        );
-  
-      }else{
-        const result=await cloudinary.v2.uploader.upload(req.file.path);
-
-        console.log(result)
-        const tipo_archivo = req.file.mimetype;
-        const ruta_archivo=result. secure_url;
-        const public_id=result.public_id
-        console.log("ruta_archivo",ruta_archivo)
-        const query =
-        "INSERT INTO publicacion (titulo,nombre_perfil,descripcion,enlace,profesion,estado_profesion,ruta_archivo,public_id_archivo,tipo_archivo,id_tipo_publicacion,id_usuario,id_estado_publicacion,id_carrera) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,(select id_carrera from carreras_fica where nombre_carrera=?))";
-      if (req.file) {
-        console.log("EXISTE ARCHIVO");
-        await pool.query(query, [
-          titulo,
-          nombre_perfil,
-          descripcion,
-          enlace,
-          profesion,
-          estado_profesion,
-          ruta_archivo,
-          public_id,
-          tipo_archivo,
-          id_tipo_publicacion,
-          id_usuario,
-          id_estado_publicacion,
-          id_carrera,
-        ]);
-        await fs.unlink(req.file.path); //eliminar de archivo de la ruta local
-        res.status(201).json({ text: "Archivo guardado" });
-      } else {
-        const query1 =
-          "INSERT INTO publicacion (titulo,nombre_perfil,descripcion,enlace,profesion,estado_profesion,id_tipo_publicacion,id_usuario,id_estado_publicacion,id_carrera) VALUES (?,?,?,?,?,?,?,?,?,(select id_carrera from carreras_fica where nombre_carrera=?))";
-        console.log("no tiene archivo");
-
-        await pool.query(query1, [
-          titulo,
-          nombre_perfil,
-          descripcion,
-          enlace,
-          profesion,
-          estado_profesion,
-          id_tipo_publicacion,
-          id_usuario,
-          id_estado_publicacion,
-          id_carrera,
-        ]);
-        res.status(201).json({ text: "Archivo guardado" });
       }
-      }
-     
-
-     
     } catch (error) {
-     
+      console.log(error);
       res.status(404).json({ text: "error no se puede guardar" });
     }
   }
-
-
-
 
   public async delete(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
@@ -324,6 +311,8 @@ class ArchivosController {
   }
 
   public async update(req: Request, res: Response) {
+
+    
     const cloudinary = require("cloudinary");
     cloudinary.config({
       //conexion a cloudinary
@@ -333,32 +322,60 @@ class ArchivosController {
     });
     const fs = require("fs-extra");
     console.log("pasa server actualizar");
+    
     try {
       const { id } = req.params;
-      console.log("id: " + id);
-      const { titulo, descripcion, enlace, profesion, estado_profesion } =
-        req.body;
-
-      const query =
-        "UPDATE publicacion set titulo=?,descripcion=?,enlace=?, profesion=?,estado_profesion=?, ruta_archivo=? WHERE id_publicacion=?";
+      console.log("id s: " + id);
+      const {
+        titulo,
+        nombre_perfil,
+        descripcion,
+        enlace,
+        profesion,
+        estado_profesion,
+        ruta_archivo,
+      } = req.body;
+      console.log("NOMBRE PERFIL 1", req.body.nombre_perfil);
+      console.log("ENLACE", req.body.enlace);
+      
+   
       if (req.file) {
+        const query =
+        "UPDATE publicacion set titulo=?,nombre_perfil=?,descripcion=?,enlace=?, profesion=?,estado_profesion=?, ruta_archivo=? ,tipo_archivo=?,public_id_archivo=? WHERE id_publicacion=?";
+        console.log("EXISTE");
+        // const result = await cloudinary.v2.uploader.upload(req.file.path);
+        // const ruta_archivo = result.url;
+        // const tipo_archivo = req.file.mimetype;
         const result = await cloudinary.v2.uploader.upload(req.file.path);
-        const ruta_archivo = result.url;
 
+        console.log(result);
+        const tipo_archivo = req.file.mimetype;
+        const ruta_archivo = result.secure_url;
+        const public_id = result.public_id;
+        
         pool.query(query, [
           titulo,
+          nombre_perfil,
           descripcion,
           enlace,
           profesion,
           estado_profesion,
           ruta_archivo,
+          tipo_archivo,
+          public_id,
           id,
         ]);
         return res.status(204).json({ text: "publicación actualizado" });
       } else {
-        const ruta_archivo = null;
+
+        try {
+          const query =
+        "UPDATE publicacion set titulo=?,nombre_perfil=?,descripcion=?,enlace=?, profesion=?,estado_profesion=?, ruta_archivo=? WHERE id_publicacion=?";
+          console.log("NO EXISTE");
+        const ruta_archivo = req.body.ruta_archivo;
         pool.query(query, [
           titulo,
+          nombre_perfil,
           descripcion,
           enlace,
           profesion,
@@ -367,6 +384,10 @@ class ArchivosController {
           id,
         ]);
         return res.status(204).json({ text: "publicación actualizado" });
+        } catch (error) {
+          return res.status(404).json({ text: "Hubo un error " });
+        }
+        
       }
     } catch (err) {
       console.log("no se puede actualizar" + err);

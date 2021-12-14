@@ -50,6 +50,13 @@ class RolesController {
                 const query = "INSERT INTO rol(tipo_rol)VALUES (?)";
                 yield database_1.default.query(query, [tipo_rol]);
                 res.status(201).json({ text: "Guardado" });
+                //  await transporter.sendMail({
+                //   from: '"Fred Foo 👻"<lupitacuas@hotmail.com>', // sender address
+                //   to: "lupitagcjazy@gmail.com", // list of receivers
+                //   subject: "Bienevenido hola mundo✔ ", // Subject line
+                //   text: "Hello world?", // plain text body
+                //   html: "<b>Hello world  bienvenido?</b>", // html body
+                // });
             }
             catch (err) {
                 res.status(400).json({ text: "Hubo un error " });
@@ -76,7 +83,10 @@ class RolesController {
             const { id_rol, tipo_rol } = req.body;
             if (tipo_rol) {
                 try {
-                    const roles = yield database_1.default.query(" UPDATE rol set ? WHERE id_rol=?", [req.body, id]);
+                    const roles = yield database_1.default.query(" UPDATE rol set ? WHERE id_rol=?", [
+                        req.body,
+                        id,
+                    ]);
                     res.json({ message: "actualizado" });
                 }
                 catch (error) {

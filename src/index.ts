@@ -30,7 +30,13 @@ import mentorasRegistroRoutes from "./routes/mentorasRoutes";
 import mentorasRoutes from "./routes/mentorasRoutes";
 import TipoMentoriasRoute from "./routes/TipoMentoriasRoute";
 import  preguntasCarreraRoutes from "./routes/preguntasCarreraRoute";
+import cancelacionMentoriaRoute  from  "./routes/cancelacionMentoriaRoute";
+import cancelacionMentoriaEstRoute  from  "./routes/cancelacionMentoriaEst";
+import  consultasDashboardEventosCarreraRoutes from  "./routes/eventoPorCarreraRoute";
+import  consultasDashboardLikesPerfilEventosRoutes from  "./routes/likesPorPerfil";
+import  temaMateriaRoutes from  "./routes/temaMateriaRoute";
 
+import  CambiarEstadoMateriaRoutes from  "./routes/cambiar_estado_materiaRoutes";
 class Server {
   public app: Application;
   constructor() {
@@ -78,6 +84,13 @@ class Server {
     this.app.use("/api/mentorasRegistro",mentorasRoutes);
     this.app.use("/api/preguntasCarrera",preguntasCarreraRoutes);
     this.app.use("/api/tipoMentoria",TipoMentoriasRoute);
+    this.app.use("/api/cancelacionMentoria",cancelacionMentoriaRoute);
+    this.app.use("/api/cancelacionMentoriaEst",cancelacionMentoriaEstRoute);
+    this.app.use("/api/eventoPorCarrera",consultasDashboardEventosCarreraRoutes);
+    this.app.use("/api/likesPorPerfil",consultasDashboardLikesPerfilEventosRoutes);
+    this.app.use("/api/temaMateria",temaMateriaRoutes);
+    this.app.use("/api/cambiarEstadoMateria",CambiarEstadoMateriaRoutes);
+
   }
   start(): void {
     //método para inicializar el servidor

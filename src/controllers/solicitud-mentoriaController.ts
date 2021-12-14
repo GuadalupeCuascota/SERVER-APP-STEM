@@ -6,7 +6,7 @@ class SolicitudMentoriaController {
 
   public async list(req: Request, res: Response) {
   
-    await pool.query("SELECT sm.id_solicitud_mentoria, sm.materia,sm.tema, u.nombre ,u.apellido,u.correo_electronico,u.carrera,sm.fecha_solicitud_mentoria from solicitud_mentoria sm, usuario u where u.id_usuario=sm.id_usuario ORDER BY sm.fecha_solicitud_mentoria DESC ", (err: any, rows: any) => {
+    await pool.query("SELECT sm.id_solicitud_mentoria, m.nombre_materia,tm.nombre_tema ,u.nombre ,u.apellido,u.correo_electronico,u.carrera,sm.fecha_solicitud_mentoria from solicitud_mentoria sm, usuario u, materia m, tema_materia tm where u.id_usuario=sm.id_usuario and m.id_materia=sm.id_materia  and tm.id_tema_materia=sm.id_tema_materia ORDER BY sm.fecha_solicitud_mentoria DESC ", (err: any, rows: any) => {
       if (err) {
         res.status(404).json("error al cargar");
         console.log(err)
@@ -21,7 +21,7 @@ class SolicitudMentoriaController {
    
 
     const { id } = req.params;
-    const solicitudes = await pool.query("SELECT sm.id_solicitud_mentoria,sm.materia,sm.tema, u.nombre ,u.apellido,u.carrera, sm.fecha_solicitud_mentoria from solicitud_mentoria sm, usuario u where u.id_usuario=sm.id_usuario and u.id_usuario=?", [id]);                                                            
+    const solicitudes = await pool.query("SELECT sm.id_solicitud_mentoria,m.nombre_materia,tm.nombre_tema, u.nombre ,u.apellido,u.carrera, sm.fecha_solicitud_mentoria from solicitud_mentoria sm, usuario u, materia m, tema_materia tm where m.id_materia=sm.id_materia and sm.id_tema_materia=tm.id_tema_materia and u.id_usuario=sm.id_usuario and u.id_usuario=?", [id]);                                                            
     if (solicitudes.length > 0) {
       res.status(200).json(solicitudes);
     }else{
@@ -35,13 +35,14 @@ class SolicitudMentoriaController {
   public   async create(req: Request, res: Response  ) {
     console.log("ENTRA")
     try{
-   const materia=req.body.materia;
-   const tema=req.body.tema;
+   const id_materia=req.body.id_materia;
+   const id_tema_materia=req.body.id_tema_materia;
    const id_usuario=req.body.id_usuario;
-   console.log("id_usuario",id_usuario)
+   console.log("id_materia",id_materia)
+   console.log("id_tema_materia",id_tema_materia)
 
-   const query="INSERT into solicitud_mentoria (materia,tema,id_usuario) VALUES (?,?,?)";
-    await pool.query(query,[materia,tema,id_usuario]);
+   const query="INSERT into solicitud_mentoria (id_materia,id_tema_materia,id_usuario) VALUES (?,?,?)";
+    await pool.query(query,[id_materia,id_tema_materia,id_usuario]);
     
     res.status(201).json({ text: " Guardado" });
     }catch(err){

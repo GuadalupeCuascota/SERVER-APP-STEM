@@ -19,7 +19,7 @@ class MateriasController {
         return __awaiter(this, void 0, void 0, function* () {
             // const roles = await pool.query("SELECT * FROM rol");
             // res.json(roles);
-            yield database_1.default.query("SELECT * FROM materia", (err, rows) => {
+            yield database_1.default.query("SELECT m.id_materia , m.nombre_materia, m.id_estado_materia, s.nombre_estado_materia, c.nombre_carrera, c.id_carrera, m.id_usuario FROM materia m , estado_materia s, usuario u, carreras_fica c where s.id_estado_materia=m.id_estado_materia and u.id_usuario=m.id_usuario and c.id_carrera=u.id_carrera", (err, rows) => {
                 if (err) {
                     res.status(404).json("error al cargar");
                     console.log(err);
@@ -47,9 +47,13 @@ class MateriasController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const nombre_materia = req.body.nombre_materia;
+                const id_usuario = req.body.id_usuario;
+                const id_estado_materia = req.body.id_estado_materia;
                 console.log("el nombre", nombre_materia);
-                const query = "INSERT INTO materia(nombre_materia)VALUES (?)";
-                yield database_1.default.query(query, [nombre_materia]);
+                console.log("el nombre", id_usuario);
+                console.log("el nombre", id_estado_materia);
+                const query = "INSERT INTO materia (nombre_materia, id_estado_materia, id_usuario) VALUES (?,?,?)";
+                yield database_1.default.query(query, [nombre_materia, id_estado_materia, id_usuario]);
                 res.status(201).json({ text: "carrera guardado" });
             }
             catch (err) {
@@ -77,6 +81,7 @@ class MateriasController {
             console.log("pasa actualizar");
             const { id } = req.params;
             const { id_materia, nombre_materia } = req.body;
+            console.log("materia", nombre_materia);
             if (id_materia) {
                 try {
                     const roles = yield database_1.default.query(" UPDATE  materia set nombre_materia=? WHERE id_materia=?", [nombre_materia, id]);
@@ -105,6 +110,24 @@ class MateriasController {
                 return res.status(404).json("error al cargar");
             }
         });
+    }
+    updateEstadoMateria(req, res) {
+        console.log("PASA AQUI ACTUALIZAR ESTADO");
+        try {
+            const { id } = req.params;
+            const { id_estado_materia } = req.body;
+            if (id) {
+                const query = "UPDATE materia set id_estado_materia=? where id_materia=?";
+                database_1.default.query(query, [id_estado_materia, id]);
+                res.status(201).json({ message: "actualizado" });
+            }
+            else {
+                res.status(404).json({ text: "Hubo un error " });
+            }
+        }
+        catch (err) {
+            res.status(404).json({ text: "Hubo un error ", err });
+        }
     }
 }
 exports.materiasController = new MateriasController();

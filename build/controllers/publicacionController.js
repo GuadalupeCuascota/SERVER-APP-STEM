@@ -123,6 +123,7 @@ class ArchivosController {
     // }
     create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log("PASA CREAR");
             const cloudinary = require("cloudinary");
             cloudinary.config({
                 //conexion a cloudinary
@@ -133,6 +134,7 @@ class ArchivosController {
             const fs = require("fs-extra");
             try {
                 const { titulo, nombre_perfil, descripcion, enlace, profesion, estado_profesion, id_tipo_publicacion, id_usuario, id_estado_publicacion, id_carrera, } = req.body;
+                console.log("id carrera", id_carrera);
                 if (req.file.mimetype == "video/mp4") {
                     yield cloudinary.v2.uploader.upload(req.file.path, {
                         resource_type: "video",
@@ -224,6 +226,7 @@ class ArchivosController {
                             id_estado_publicacion,
                             id_carrera,
                         ]);
+                        console.log("id carrera", id_carrera);
                         yield fs.unlink(req.file.path); //eliminar de archivo de la ruta local
                         res.status(201).json({ text: "Archivo guardado" });
                     }
@@ -247,6 +250,7 @@ class ArchivosController {
                 }
             }
             catch (error) {
+                console.log(error);
                 res.status(404).json({ text: "error no se puede guardar" });
             }
         });
@@ -285,35 +289,55 @@ class ArchivosController {
             console.log("pasa server actualizar");
             try {
                 const { id } = req.params;
-                console.log("id: " + id);
-                const { titulo, descripcion, enlace, profesion, estado_profesion } = req.body;
-                const query = "UPDATE publicacion set titulo=?,descripcion=?,enlace=?, profesion=?,estado_profesion=?, ruta_archivo=? WHERE id_publicacion=?";
+                console.log("id s: " + id);
+                const { titulo, nombre_perfil, descripcion, enlace, profesion, estado_profesion, ruta_archivo, } = req.body;
+                console.log("NOMBRE PERFIL 1", req.body.nombre_perfil);
+                console.log("ENLACE", req.body.enlace);
                 if (req.file) {
+                    const query = "UPDATE publicacion set titulo=?,nombre_perfil=?,descripcion=?,enlace=?, profesion=?,estado_profesion=?, ruta_archivo=? ,tipo_archivo=?,public_id_archivo=? WHERE id_publicacion=?";
+                    console.log("EXISTE");
+                    // const result = await cloudinary.v2.uploader.upload(req.file.path);
+                    // const ruta_archivo = result.url;
+                    // const tipo_archivo = req.file.mimetype;
                     const result = yield cloudinary.v2.uploader.upload(req.file.path);
-                    const ruta_archivo = result.url;
+                    console.log(result);
+                    const tipo_archivo = req.file.mimetype;
+                    const ruta_archivo = result.secure_url;
+                    const public_id = result.public_id;
                     database_1.default.query(query, [
                         titulo,
+                        nombre_perfil,
                         descripcion,
                         enlace,
                         profesion,
                         estado_profesion,
                         ruta_archivo,
+                        tipo_archivo,
+                        public_id,
                         id,
                     ]);
                     return res.status(204).json({ text: "publicación actualizado" });
                 }
                 else {
-                    const ruta_archivo = null;
-                    database_1.default.query(query, [
-                        titulo,
-                        descripcion,
-                        enlace,
-                        profesion,
-                        estado_profesion,
-                        ruta_archivo,
-                        id,
-                    ]);
-                    return res.status(204).json({ text: "publicación actualizado" });
+                    try {
+                        const query = "UPDATE publicacion set titulo=?,nombre_perfil=?,descripcion=?,enlace=?, profesion=?,estado_profesion=?, ruta_archivo=? WHERE id_publicacion=?";
+                        console.log("NO EXISTE");
+                        const ruta_archivo = req.body.ruta_archivo;
+                        database_1.default.query(query, [
+                            titulo,
+                            nombre_perfil,
+                            descripcion,
+                            enlace,
+                            profesion,
+                            estado_profesion,
+                            ruta_archivo,
+                            id,
+                        ]);
+                        return res.status(204).json({ text: "publicación actualizado" });
+                    }
+                    catch (error) {
+                        return res.status(404).json({ text: "Hubo un error " });
+                    }
                 }
             }
             catch (err) {

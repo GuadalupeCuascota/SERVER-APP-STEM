@@ -33,6 +33,12 @@ const solicitudMentoriaRoute_1 = __importDefault(require("./routes/solicitudMent
 const mentorasRoutes_1 = __importDefault(require("./routes/mentorasRoutes"));
 const TipoMentoriasRoute_1 = __importDefault(require("./routes/TipoMentoriasRoute"));
 const preguntasCarreraRoute_1 = __importDefault(require("./routes/preguntasCarreraRoute"));
+const cancelacionMentoriaRoute_1 = __importDefault(require("./routes/cancelacionMentoriaRoute"));
+const cancelacionMentoriaEst_1 = __importDefault(require("./routes/cancelacionMentoriaEst"));
+const eventoPorCarreraRoute_1 = __importDefault(require("./routes/eventoPorCarreraRoute"));
+const likesPorPerfil_1 = __importDefault(require("./routes/likesPorPerfil"));
+const temaMateriaRoute_1 = __importDefault(require("./routes/temaMateriaRoute"));
+const cambiar_estado_materiaRoutes_1 = __importDefault(require("./routes/cambiar_estado_materiaRoutes"));
 class Server {
     constructor() {
         //crear el método constructor
@@ -76,6 +82,12 @@ class Server {
         this.app.use("/api/mentorasRegistro", mentorasRoutes_1.default);
         this.app.use("/api/preguntasCarrera", preguntasCarreraRoute_1.default);
         this.app.use("/api/tipoMentoria", TipoMentoriasRoute_1.default);
+        this.app.use("/api/cancelacionMentoria", cancelacionMentoriaRoute_1.default);
+        this.app.use("/api/cancelacionMentoriaEst", cancelacionMentoriaEst_1.default);
+        this.app.use("/api/eventoPorCarrera", eventoPorCarreraRoute_1.default);
+        this.app.use("/api/likesPorPerfil", likesPorPerfil_1.default);
+        this.app.use("/api/temaMateria", temaMateriaRoute_1.default);
+        this.app.use("/api/cambiarEstadoMateria", cambiar_estado_materiaRoutes_1.default);
     }
     start() {
         //método para inicializar el servidor
