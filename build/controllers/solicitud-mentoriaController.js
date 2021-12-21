@@ -32,7 +32,7 @@ class SolicitudMentoriaController {
     getOne(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            const solicitudes = yield database_1.default.query("SELECT sm.id_solicitud_mentoria,m.nombre_materia,tm.nombre_tema, u.nombre ,u.apellido,c.nombre_carrera,c.id_carrera, sm.fecha_solicitud_mentoria from solicitud_mentoria sm, usuario u, materia m, tema_materia tm ,carreras_fica c where m.id_materia=sm.id_materia and sm.id_tema_materia=tm.id_tema_materia and u.id_usuario=sm.id_usuario and c.id_carrera=u.id_carrera and u.id_usuario=42 ", [id]);
+            const solicitudes = yield database_1.default.query("SELECT sm.id_solicitud_mentoria,m.nombre_materia,tm.nombre_tema, u.nombre ,u.apellido,c.nombre_carrera,c.id_carrera, sm.fecha_solicitud_mentoria from solicitud_mentoria sm, usuario u, materia m, tema_materia tm ,carreras_fica c where m.id_materia=sm.id_materia and sm.id_tema_materia=tm.id_tema_materia and u.id_usuario=sm.id_usuario and c.id_carrera=u.id_carrera and u.id_usuario=? ", [id]);
             if (solicitudes.length > 0) {
                 res.status(200).json(solicitudes);
             }
