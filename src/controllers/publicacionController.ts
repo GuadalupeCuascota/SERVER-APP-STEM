@@ -30,6 +30,7 @@ class ArchivosController {
     }
     res.status(404).json({ text: "publicación no existe" });
   }
+  
 
   public async getPublicacionC(req: Request, res: Response) {
     const { id } = req.params;

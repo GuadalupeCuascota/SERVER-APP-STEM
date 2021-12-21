@@ -17,7 +17,7 @@ const database_1 = __importDefault(require("../database"));
 class SolicitudMentoriaController {
     list(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield database_1.default.query("SELECT sm.id_solicitud_mentoria, m.nombre_materia,tm.nombre_tema ,u.nombre ,u.apellido,u.correo_electronico,u.carrera,sm.fecha_solicitud_mentoria from solicitud_mentoria sm, usuario u, materia m, tema_materia tm where u.id_usuario=sm.id_usuario and m.id_materia=sm.id_materia  and tm.id_tema_materia=sm.id_tema_materia ORDER BY sm.fecha_solicitud_mentoria DESC ", (err, rows) => {
+            yield database_1.default.query("SELECT sm.id_solicitud_mentoria, m.nombre_materia,tm.nombre_tema ,u.nombre ,u.apellido,u.correo_electronico,c.nombre_carrera,c.id_carrera ,sm.fecha_solicitud_mentoria from solicitud_mentoria sm, usuario u, materia m, tema_materia tm , carreras_fica c where u.id_usuario=sm.id_usuario and m.id_materia=sm.id_materia  and  c.id_carrera=u.id_carrera and tm.id_tema_materia=sm.id_tema_materia ORDER BY sm.fecha_solicitud_mentoria DESC ", (err, rows) => {
                 if (err) {
                     res.status(404).json("error al cargar");
                     console.log(err);
@@ -32,7 +32,7 @@ class SolicitudMentoriaController {
     getOne(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            const solicitudes = yield database_1.default.query("SELECT sm.id_solicitud_mentoria,m.nombre_materia,tm.nombre_tema, u.nombre ,u.apellido,u.carrera, sm.fecha_solicitud_mentoria from solicitud_mentoria sm, usuario u, materia m, tema_materia tm where m.id_materia=sm.id_materia and sm.id_tema_materia=tm.id_tema_materia and u.id_usuario=sm.id_usuario and u.id_usuario=?", [id]);
+            const solicitudes = yield database_1.default.query("SELECT sm.id_solicitud_mentoria,m.nombre_materia,tm.nombre_tema, u.nombre ,u.apellido,c.nombre_carrera,c.id_carrera, sm.fecha_solicitud_mentoria from solicitud_mentoria sm, usuario u, materia m, tema_materia tm ,carreras_fica c where m.id_materia=sm.id_materia and sm.id_tema_materia=tm.id_tema_materia and u.id_usuario=sm.id_usuario and c.id_carrera=u.id_carrera and u.id_usuario=42 ", [id]);
             if (solicitudes.length > 0) {
                 res.status(200).json(solicitudes);
             }

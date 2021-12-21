@@ -129,6 +129,7 @@ class CancelacionMentoriasController {
     }
     cancelarMentoriaEst(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log("PASA CANCELAR MENTORIA");
             try {
                 const { id } = req.params;
                 const id_usuario = req.body.id_usuario;
@@ -138,7 +139,7 @@ class CancelacionMentoriasController {
                 console.log("el estado", id_estado_agen_mentoria);
                 console.log("id_registro", id_registro_mentoria);
                 console.log("id_usuario", id_usuario);
-                const registroMentorias = yield database_1.default.query("SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.nombre,u.apellido, m.materia from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario and m.id_registro_mentoria=?", [id_registro_mentoria]);
+                const registroMentorias = yield database_1.default.query("SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.nombre,u.apellido, mat.nombre_materia from registro_mentoria m, usuario u, materia mat WHERE m.id_usuario=u.id_usuario and m.id_materia=mat.id_materia and m.id_registro_mentoria=?", [id_registro_mentoria]);
                 console.log("el registro", registroMentorias);
                 if (registroMentorias.length > 0) {
                     const fecha = registroMentorias[0].fecha;
@@ -195,6 +196,7 @@ class CancelacionMentoriasController {
                                 }
                                 else {
                                     res.status(404).json({ text: "No se puede cancelar la mentoria" });
+                                    console.log("NO SE PUEDE CANCELAR LA MENTORIA");
                                 }
                             }
                         }

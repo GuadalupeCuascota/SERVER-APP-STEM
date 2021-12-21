@@ -24,9 +24,11 @@ class TemaMateriaController {
       const temas= await pool.query("SELECT tm.nombre_tema, tm.id_tema_materia ,m.id_materia ,m.nombre_materia FROM tema_materia tm , materia m where m.id_materia=? and m.id_materia=tm.id_materia", [id]);
       console.log(temas);
       if (temas.length > 0) {
-        return res.json(temas);
-      }
-      res.json({ text: "la materia no existe" });
+        return res.status(200).json(temas);
+       
+      } 
+      return res.status(404).json({ text: "No existe temas registrados" });
+    
     }
     
   

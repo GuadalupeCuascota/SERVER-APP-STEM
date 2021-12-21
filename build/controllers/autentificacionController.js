@@ -36,7 +36,8 @@ class AutentificacionController {
                         apellido: usuario[0].apellido,
                         id_rol: usuario[0].id_rol,
                         nivel_academico: usuario[0].nivel_academico,
-                        carrera: usuario[0].carrera,
+                        // nombre_carrera: usuario[0].nombre_carrera,
+                        id_carrera: usuario[0].id_carrera
                     };
                     const Token = jsonwebtoken_1.default.sign({ payload }, "SCRET", { expiresIn: "1h" });
                     console.log(Token);
