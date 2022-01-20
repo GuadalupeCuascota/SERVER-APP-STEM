@@ -2,7 +2,7 @@ import { validate } from "class-validator";
 import { Request, Response } from "express";
 import pool from "../database";
 import nodemailer = require("nodemailer");
-import {transporter} from '../controllers/emailer'
+// import {transporter} from '../controllers/emailer'
 class RolesController {
   public async list(req: Request, res: Response) {
     // const roles = await pool.query("SELECT * FROM rol");

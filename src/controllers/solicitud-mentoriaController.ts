@@ -6,7 +6,7 @@ class SolicitudMentoriaController {
 
   public async list(req: Request, res: Response) {
   
-    await pool.query("SELECT sm.id_solicitud_mentoria, m.nombre_materia,tm.nombre_tema ,u.nombre ,u.apellido,u.correo_electronico,c.nombre_carrera,c.id_carrera ,sm.fecha_solicitud_mentoria from solicitud_mentoria sm, usuario u, materia m, tema_materia tm , carreras_fica c where u.id_usuario=sm.id_usuario and m.id_materia=sm.id_materia  and  c.id_carrera=u.id_carrera and tm.id_tema_materia=sm.id_tema_materia ORDER BY sm.fecha_solicitud_mentoria DESC ", (err: any, rows: any) => {
+    await pool.query("SELECT sm.id_solicitud_mentoria, m.nombre_materia,tm.nombre_tema ,u.nombre,m.id_usuario,u.apellido,u.correo_electronico,c.nombre_carrera,c.id_carrera ,sm.fecha_solicitud_mentoria, m.id_usuario from solicitud_mentoria sm, usuario u, materia m, tema_materia tm , carreras_fica c where u.id_usuario=sm.id_usuario and m.id_materia=sm.id_materia and c.id_carrera=u.id_carrera and tm.id_tema_materia=sm.id_tema_materia ORDER BY sm.fecha_solicitud_mentoria DESC ", (err: any, rows: any) => {
       if (err) {
         res.status(404).json("error al cargar");
         console.log(err)

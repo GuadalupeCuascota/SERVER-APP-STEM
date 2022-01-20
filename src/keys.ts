@@ -1,10 +1,10 @@
 import fs from "fs";
 export default {
   database: {
-    host: "147.182.232.156",
+    host: "161.35.230.206",
     user: "stem",
-    password: "35Love41_",
-    database: "bdd_stem",
+    password: "gclupita4137",
+    database: "bdd_appstem",
     
 
   },

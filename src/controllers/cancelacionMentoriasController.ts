@@ -1,7 +1,7 @@
 import { Console } from "console";
 import { Request, Response } from "express";
 import pool from "../database";
-import { transporter } from "./emailer";
+// import { transporter } from "./emailer";
 import * as format from "date-fns/format";
 
 class CancelacionMentoriasController {
@@ -59,19 +59,19 @@ class CancelacionMentoriasController {
           }
 
           arrayUsuario = someVar;
-          try {
-            await transporter.sendMail({
-              from: '"FICA STEM"<ficastemutn@gmail.com>', // sender address
-              to: arrayUsuario, // list of receivers
-              subject: "Mentoria agendada ", // Subject line
-              text: "La mentoria agendada ha sido cancelada", // plain text body
-              html: "<b> La mentoria agendada ha sido cancelada</b>"
-              , // html body
-            });
-            res.status(200).json({ text: "Email enviado" });
-          } catch (error) {
-            console.log("HUBO UN ERROR");
-          }
+          // try {
+          //   await transporter.sendMail({
+          //     from: '"FICA STEM"<ficastemutn@gmail.com>', // sender address
+          //     to: arrayUsuario, // list of receivers
+          //     subject: "Mentoria agendada ", // Subject line
+          //     text: "La mentoria agendada ha sido cancelada", // plain text body
+          //     html: "<b> La mentoria agendada ha sido cancelada</b>"
+          //     , // html body
+          //   });
+          //   res.status(200).json({ text: "Email enviado" });
+          // } catch (error) {
+          //   console.log("HUBO UN ERROR");
+          // }
         } else {
           if(fechaActual ==fechaRegistro){
             console.log("la fecha es igual")
@@ -116,18 +116,18 @@ class CancelacionMentoriasController {
             }
   
             arrayUsuario = someVar;
-            try {
-              await transporter.sendMail({
-                from: '"FICA STEM"<ficastemutn@gmail.com>', // sender address
-                to: arrayUsuario, // list of receivers
-                subject: "Mentoria Cancelada ", // Subject line
-                text: "La mentoria agendada ha sido cancelada", // plain text body
-                html: "<b> La mentoria agendada ha sido cancelada</b>", // html body
-              });
-              res.status(200).json({ text: "Email enviado" });
-            } catch (error) {
-              console.log("HUBO UN ERROR");
-            }
+            // try {
+            //   await transporter.sendMail({
+            //     from: '"FICA STEM"<ficastemutn@gmail.com>', // sender address
+            //     to: arrayUsuario, // list of receivers
+            //     subject: "Mentoria Cancelada ", // Subject line
+            //     text: "La mentoria agendada ha sido cancelada", // plain text body
+            //     html: "<b> La mentoria agendada ha sido cancelada</b>", // html body
+            //   });
+            //   res.status(200).json({ text: "Email enviado" });
+            // } catch (error) {
+            //   console.log("HUBO UN ERROR");
+            // }
             }else{
               res.status(404).json({ text: "No se puede cancelar la mentoria" });
             }

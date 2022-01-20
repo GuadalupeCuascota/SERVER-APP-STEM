@@ -7,7 +7,7 @@ class MateriasController {
     // const roles = await pool.query("SELECT * FROM rol");
     // res.json(roles);
     await pool.query(
-      "SELECT m.id_materia , m.nombre_materia, m.id_estado_materia, s.nombre_estado_materia, c.nombre_carrera, c.id_carrera, m.id_usuario FROM materia m , estado_materia s, usuario u, carreras_fica c where s.id_estado_materia=m.id_estado_materia and u.id_usuario=m.id_usuario and c.id_carrera=u.id_carrera",
+      "SELECT m.id_materia , m.nombre_materia, m.id_estado_materia, s.nombre_estado_materia, c.nombre_carrera, c.id_carrera, m.id_usuario FROM materia m , estado_materia s, usuario u, carreras_fica c where s.id_estado_materia=m.id_estado_materia and u.id_usuario=m.id_usuario and c.id_carrera=u.id_carrera ORDER BY m.id_materia DESC",
       (err: any, rows: any) => {
         if (err) {
           res.status(404).json("error al cargar");

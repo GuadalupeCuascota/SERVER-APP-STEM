@@ -40,9 +40,10 @@ class AngerdarMentoriaController {
 console.log("LIST SOLICITUDES")
     const { id } = req.params;
     const solicitudesPorRegistroMentoria = await pool.query(
-      "select a.id_agendamiento_mentoria ,r.fecha,r.hora_inicio,r.hora_fin,r.id_usuario,u.nombre,u.apellido,u.correo_electronico,t.nombre_estado_agen_mentoria,m.nombre_materia, m.id_materia from tipo_estado_agend_mentoria t, registro_mentoria r, agendamiento_mentorias a, usuario u, materia m where r.id_registro_mentoria=a.id_registro_mentoria and u.id_usuario=a.id_usuario and t.id_estado_agen_mentoria=a.id_estado_agen_mentoria and m.id_materia=r.id_materia and r.id_registro_mentoria=?",
+      "select a.id_agendamiento_mentoria ,r.fecha,r.hora_inicio,r.hora_fin,r.id_usuario,u.nombre,u.apellido,u.correo_electronico,t.nombre_estado_agen_mentoria,m.nombre_materia, m.id_materia from tipo_estado_agend_mentoria t, registro_mentoria r, agendamiento_mentorias a, usuario u, materia m where r.id_registro_mentoria=a.id_registro_mentoria and u.id_usuario=a.id_usuario and t.id_estado_agen_mentoria=a.id_estado_agen_mentoria and m.id_materia=r.id_materia and a.id_estado_agen_mentoria=1 and r.id_registro_mentoria=?",
       [id]
     );
+    
 
     console.log(solicitudesPorRegistroMentoria);
     if (solicitudesPorRegistroMentoria.length > 0) {
@@ -103,12 +104,13 @@ console.log("LIST SOLICITUDES")
         id_usuario,
         // nombre_estado_mentoria=2
       } = req.body;
+      
       console.log("registro:" + req.body.id_registro_mentoria);
       console.log("usuario:" + req.body.id_usuario);
       console.log("observacio" + req.body.observacion);
       console.log("id_estado_agen_mentoria", req.body.id_estado_agen_mentoria);
       const findAgendamiento = await pool.query(
-        "SELECT * FROM agendamiento_mentorias WHERE id_usuario=? and id_registro_mentoria=?",
+        "SELECT * FROM agendamiento_mentorias WHERE id_usuario=? and id_registro_mentoria=? and id_estado_agen_mentoria=1",
         [id_usuario,id_registro_mentoria]
       );  
       if (findAgendamiento.length > 0) {
