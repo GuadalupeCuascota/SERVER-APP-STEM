@@ -206,7 +206,7 @@ class UsuariosController {
 
       console.log("contra", correo_electronico);
       const correo = await pool.query(
-        "SELECT correo_electronico FROM usuario where correo_electronico=? and id_rol=4 ",
+        "SELECT correo_electronico FROM usuario where correo_electronico=? and (id_rol=4  or id_rol=5)",
         [correo_electronico]
       );
       if (correo.length > 0) {

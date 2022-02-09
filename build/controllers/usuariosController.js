@@ -176,7 +176,7 @@ class UsuariosController {
         try {
             const { correo_electronico } = req.params;
             console.log("contra", correo_electronico);
-            const correo = await database_1.default.query("SELECT correo_electronico FROM usuario where correo_electronico=? and id_rol=4 ", [correo_electronico]);
+            const correo = await database_1.default.query("SELECT correo_electronico FROM usuario where correo_electronico=? and (id_rol=4  or id_rol=5)", [correo_electronico]);
             if (correo.length > 0) {
                 res.status(201).json({ text: "Dato encontrado" });
             }

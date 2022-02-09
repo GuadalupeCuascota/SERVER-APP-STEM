@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.cancelacionMentoriasController = void 0;
 const database_1 = __importDefault(require("../database"));
+const emailer_1 = require("./emailer");
 class CancelacionMentoriasController {
     //  localtime=moment().format('YYYY-MM-DD');
     async updateRegistroMentoria(req, res) {
@@ -13,10 +14,11 @@ class CancelacionMentoriasController {
             const id_estado_mentoria = req.body.id_estado_mentoria;
             console.log("el id", id);
             console.log("el estado", id_estado_mentoria);
-            const registroMentorias = await database_1.default.query("SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.nombre,u.apellido, m.materia from registro_mentoria m, usuario u WHERE m.id_usuario=u.id_usuario and m.id_registro_mentoria=?", [id]);
+            const registroMentorias = await database_1.default.query("SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.nombre,u.apellido,mat.nombre_materia from registro_mentoria m, usuario u, materia mat WHERE m.id_usuario=u.id_usuario and mat.id_materia=m.id_materia and m.id_registro_mentoria=?", [id]);
             if (registroMentorias.length > 0) {
                 const fecha = registroMentorias[0].fecha;
                 const hora_inicio = registroMentorias[0].hora_inicio;
+                const nombre_materia = registroMentorias[0].nombre_materia;
                 console.log("fecha", fecha);
                 console.log("hora_inicio", hora_inicio);
                 const hoy = new Date(fecha);
@@ -40,19 +42,24 @@ class CancelacionMentoriasController {
                         someVar.push(usu.correo_electronico);
                     }
                     arrayUsuario = someVar;
-                    // try {
-                    //   await transporter.sendMail({
-                    //     from: '"FICA STEM"<ficastemutn@gmail.com>', // sender address
-                    //     to: arrayUsuario, // list of receivers
-                    //     subject: "Mentoria agendada ", // Subject line
-                    //     text: "La mentoria agendada ha sido cancelada", // plain text body
-                    //     html: "<b> La mentoria agendada ha sido cancelada</b>"
-                    //     , // html body
-                    //   });
-                    //   res.status(200).json({ text: "Email enviado" });
-                    // } catch (error) {
-                    //   console.log("HUBO UN ERROR");
-                    // }
+                    try {
+                        await emailer_1.transporter.sendMail({
+                            from: '"FICA STEM"<ficastemutn@gmail.com>',
+                            to: arrayUsuario,
+                            subject: "Mentoria agendada ",
+                            text: "La mentoria agendada ha sido cancelada",
+                            html: "<b>La mentoria agendada ha sido cancelada</b>" +
+                                "</b>" +
+                                "<br>" +
+                                "<b>Materia:" +
+                                nombre_materia + "<br>" +
+                                "<b>Fecha mentoria:" + fechaRegistro,
+                        });
+                        res.status(200).json({ text: "Email enviado" });
+                    }
+                    catch (error) {
+                        console.log("HUBO UN ERROR");
+                    }
                 }
                 else {
                     if (fechaActual == fechaRegistro) {
@@ -87,18 +94,24 @@ class CancelacionMentoriasController {
                                 someVar.push(usu.correo_electronico);
                             }
                             arrayUsuario = someVar;
-                            // try {
-                            //   await transporter.sendMail({
-                            //     from: '"FICA STEM"<ficastemutn@gmail.com>', // sender address
-                            //     to: arrayUsuario, // list of receivers
-                            //     subject: "Mentoria Cancelada ", // Subject line
-                            //     text: "La mentoria agendada ha sido cancelada", // plain text body
-                            //     html: "<b> La mentoria agendada ha sido cancelada</b>", // html body
-                            //   });
-                            //   res.status(200).json({ text: "Email enviado" });
-                            // } catch (error) {
-                            //   console.log("HUBO UN ERROR");
-                            // }
+                            try {
+                                await emailer_1.transporter.sendMail({
+                                    from: '"FICA STEM"<ficastemutn@gmail.com>',
+                                    to: arrayUsuario,
+                                    subject: "Mentoria Cancelada ",
+                                    text: "La mentoria agendada ha sido cancelada",
+                                    html: "<b>La mentoria agendada ha sido cancelada</b>" +
+                                        "</b>" +
+                                        "<br>" +
+                                        "<b>Materia:" +
+                                        nombre_materia + "<br>" +
+                                        "<b>Fecha mentoria:" + fechaRegistro
+                                });
+                                res.status(200).json({ text: "Email enviado" });
+                            }
+                            catch (error) {
+                                console.log("HUBO UN ERROR");
+                            }
                         }
                         else {
                             res.status(404).json({ text: "No se puede cancelar la mentoria" });

@@ -1,101 +1,28 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendMail = void 0;
-const nodemailer = require('nodemailer');
-const nodemailerSendgrid = require('nodemailer-sendgrid');
-const sendgridMailer = require('@sendgrid/mail');
-sendgridMailer.setApiKey('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');
-const message = {
-    from: 'pgcuascotac@utn.edu.ec',
-    to: 'lupitagcjazy@gmail.com',
-    subject: 'Prueba',
-    html: "<b> La mentoria agendada ha sido cancelada</b>  <b>" +
-        "</b>",
-};
-// sendgridMailer.send(message)
-// .then(()=>{
-//   console.log("email enviado")
-// })
-// .catch(()=>{
-// console.log("errror")
-// })
-const createTrans = () => {
-    const transport = nodemailer.createTransport({
-        host: "smtp.mailtrap.io",
-        port: 2525,
-        auth: {
-            user: "c288914d8d85ef",
-            pass: "1ad559c4e5e047"
-        }
-    });
-    // const transport=nodemailer.createTransport
-    // (nodemailerSendgrid({
-    //   apiKey:'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'
-    //   })
-    // );
-    return transport;
-};
-const sendMail = async (user) => {
-    console.log("el usuario", user);
-    // const transporter=createTrans()
-    const info = await sendgridMailer.send({
-        from: 'pgcuascotac@utn.edu.ec',
-        to: user,
-        subject: 'Prueba',
-        html: "<b> La mentoria agendada ha sido cancelada</b>  <b>" +
-            "</b>",
-    })
-        .then(() => {
-        console.log("email enviado");
-    })
-        .catch(() => {
-        console.log("errror");
-    });
-    // console.log("Message sent:",info.messageId)
-    // // return info
-};
-exports.sendMail = sendMail;
-exports.SendMail = (user) => exports.sendMail(user);
-// const transporter = nodemailer.createTransport( 
-//   sendgridTransport({ 
-//     auth: { 
-//       api_user: process.env.SENDGRID_API_USER, // SG nombre de usuario 
-//       api_key: process.env.SENDGRID_API_PASSWORD, // SG contraseña 
-//     }, 
-//   }) 
-// );
-// const options = { 
-//   from: 'pgcuascotac@utn.edu.ec', // sender address
-//   to: '', // list of receivers
-//   subject: "Mentoria agendada ", // Subject line
-//   text: "La mentoria agendada ha sido cancelada", // plain text body
-//   html:
-//     "<b> La mentoria agendada ha sido cancelada</b>  <b>" +
-//     "</b>",
-// };
-// transporter.sendMail(options,(err,info))
-// export { };
-// import nodemailer = require("nodemailer");
-// var sgTransport = require('nodemailer-sendgrid-transport');
-// // import nodemailerSendgrid = require("nodemailer-sendgrid");
-// // const sendgridTransport = require('nodemailer-sendgrid-transport');
-// // export const transporter = nodemailer.createTransport(sendgridTransport({
-// //     auth: {
-// //         api_key: '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'
-// //     }
-// // }))
-// export const transporter = nodemailer.createTransport({
-//   host: "smtp.gmail.com",
-//   port: 456,
-//   auth: {
-//     user: "lupitagcjazy@gmail.com",
-//     pass: "fzyyihrvgjylmqlw"
-//   },
-// //   tls: {
-// //     rejectUnauthorized: false
-// // }
-// });
-// transporter.verify().then(()=>{
-//     console.log("Ready send")
-// },(err)=>console.log("EL ERROR ",err)
-// )
+exports.transporter = void 0;
+var nodemailer = require("nodemailer");
+//SENDGRID
+// const nodemailer =require('nodemailer');
+// const sendgridTransport=require ('nodemailer-sendgrid-transport');
+// const sgMail = require('@sendgrid/mail')
+// export const transport =nodemailer.createTransport(sendgridTransport({
+//   auth:{
+//     api_key:'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'
+//   }
+// }))
+exports.transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+        user: 'lupitagcjazy@gmail.com',
+        pass: 'poovgrkiawszakhj',
+    },
+    tls: {
+        rejectUnauthorized: false
+    }
+});
+exports.transporter.verify().then(() => {
+    console.log("Ready for send email");
+});

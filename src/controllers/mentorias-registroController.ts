@@ -1,21 +1,11 @@
 import { Console } from "console";
 import { Request, Response } from "express";
 import pool from "../database";
-// import { transporter } from "../controllers/emailer";
-import emailer = require("../controllers/emailer");
+import { transporter } from "../controllers/emailer";
 
-import nodemailer = require("nodemailer");
-
-const sendgridTransport = require("nodemailer-sendgrid-transport");
-
-const transporter = nodemailer.createTransport(
-  sendgridTransport({
-    auth: {
-      api_key:
-        "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",
-    },
-  })
-);
+import { Any } from "typeorm";
+import e = require("express");
+import { isEmail } from "class-validator";
 
 var myDate = new Date();
 class MentoriasController {
@@ -101,18 +91,24 @@ class MentoriasController {
   }
 
   public async getOne(req: Request, res: Response) {
-    console.log("obtener mentoria por id");
+    console.log("obtener MENTORIA por id");
     const { id } = req.params;
-    const registroMentorias = await pool.query(
-      "SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.nombre,u.apellido, m.id_materia, mat.nombre_materia from registro_mentoria m, usuario u , materia mat WHERE m.id_usuario=u.id_usuario and mat.id_materia=m.id_materia and m.id_registro_mentoria=?",
-      [id]
-    );
+    try {
+      const registroMentorias = await pool.query(
+        "SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.nombre,u.apellido, m.id_materia, mat.nombre_materia, t.nombre_estado_mentoria,  t.id_estado_mentoria from registro_mentoria m, usuario u , materia mat, tipo_estado_mentoria t WHERE m.id_usuario=u.id_usuario and mat.id_materia=m.id_materia and m.id_estado_mentoria=t.id_estado_mentoria and m.id_registro_mentoria=?",
+        [id]
+      );
 
-    console.log(registroMentorias);
-    if (registroMentorias.length > 0) {
-      return res.status(200).json(registroMentorias[0]);
+      console.log(registroMentorias);
+      if (registroMentorias.length > 0) {
+        res.status(200).json(registroMentorias[0]);
+      } else {
+        res.status(404).json({ text: "El registro no existe" });
+      }
+    } catch (error) {
+      res.status(404).json({ text: "hubo un error" + error });
+      console.log("hubo un errro" + error);
     }
-    res.status(404).json({ text: "El registro no existe" });
   }
 
   public async create(req: Request, res: Response) {
@@ -176,7 +172,6 @@ class MentoriasController {
     }
   }
   public async updateRegistroMentoria(req: Request, res: Response) {
-    console.log("pasa actualizar:");
     try {
       const { id } = req.params;
       console.log("el id", id);
@@ -249,22 +244,22 @@ class MentoriasController {
 
           arrayUsuario = someVar;
 
-          try {
-            await transporter.sendMail({
-              from: "pgcuascotac@utn.edu.ec", // sender address
-              to: arrayUsuario, // list of receivers
-              subject: "Mentoria agendada ", // Subject line
-              text: "La mentoria agendada ha sido cancelada", // plain text body
-              html:
-                "<b> La mentoria agendada ha sido cancelada</b>  <b>" +
-                { fecha } +
-                "</b>",
+          // try {
+          //   await transporter.sendMail({
+          //     from: "pgcuascotac@utn.edu.ec", // sender address
+          //     to: arrayUsuario, // list of receivers
+          //     subject: "Mentoria agendada ", // Subject line
+          //     text: "La mentoria agendada ha sido cancelada", // plain text body
+          //     html:
+          //       "<b> La mentoria agendada ha sido cancelada</b>  <b>" +
+          //       { fecha } +
+          //       "</b>",
 
-              // html body
-            });
-          } catch (error) {
-            console.log("HUBO UN ERROR");
-          }
+          //     // html body
+          //   });
+          // } catch (error) {
+          //   console.log("HUBO UN ERROR");
+          // }
 
           res.status(200).json({ text: "registro actualizado" });
           console.log("actualizado");
@@ -284,138 +279,148 @@ class MentoriasController {
   }
 
   public async update(req: Request, res: Response) {
-    console.log("fecha:" + req.body.fecha);
-    console.log("pasa actualizar:");
+    console.log("UPDATE:");
     try {
       const { id } = req.params;
       const fecha = req.body.fecha;
       const hora_inicio = req.body.hora_inicio;
       const hora_fin = req.body.hora_fin;
       const nombre_materia = req.body.nombre_materia;
-      console.log("materia", nombre_materia);
+      const id_estado_mentoria = req.body.id_estado_mentoria;
+      console.log("materia11", nombre_materia);
+      console.log("fecha", fecha);
+      console.log("hora ini", hora_inicio);
+      console.log("hora_fin", hora_fin);
+      console.log("id_estado", id_estado_mentoria);
+
       /////OBTENER FECHA ACTUAL////
       let date = new Date();
       let day = `${date.getDate()}`.padStart(2, "0");
       let month = `${date.getMonth() + 1}`.padStart(2, "0");
       let year = date.getFullYear();
       let fechaActual = `${year}-${month}-${day}`;
-
-      if (fechaActual < fecha) {
-        console.log("es menor");
-        const query =
-          "UPDATE registro_mentoria set fecha=?,hora_inicio=?,hora_fin=?, id_materia=(select id_materia from materia where nombre_materia=?) where id_registro_mentoria=?";
-        pool.query(query, [fecha, hora_inicio, hora_fin, nombre_materia, id]);
-
-        const usuario = await pool.query(
-          "select u.correo_electronico from tipo_estado_agend_mentoria t,registro_mentoria r, agendamiento_mentorias a, usuario u where r.id_registro_mentoria=a.id_registro_mentoria and u.id_usuario=a.id_usuario and t.id_estado_agen_mentoria=a.id_estado_agen_mentoria and a.id_registro_mentoria=?",
-
-          [id]
-        );
-        console.log(usuario);
-        var arrayUsuario = [];
-        var someVar = [];
-        for (let usu of usuario) {
-          someVar.push(usu.correo_electronico);
-        }
-        console.log(someVar);
-        arrayUsuario = someVar;
-        console.log("el correo", arrayUsuario);
+      console.log("la fecha actual", fechaActual);
+      if (id_estado_mentoria == 1) {
+        console.log("estado: mentoria registrada");
         try {
-          emailer.sendMail(arrayUsuario)
-          res.status(200).json({ text: "Email enviado" });
-          
+          const query =
+            "UPDATE registro_mentoria set fecha=?,hora_inicio=?,hora_fin=?, id_materia=(select id_materia from materia where nombre_materia=?) where id_registro_mentoria=?";
+          pool.query(query, [fecha, hora_inicio, hora_fin, nombre_materia, id]);
+          res.status(201).json({ text: "mentoria actualizado" });
         } catch (error) {
-          res.status(404).json({ text: "Hubo un error", error });
-          
+          res.status(404).json({ text: "Hubo un error " });
+          console.log("no se puede actualizar" + error);
         }
-
-        // emailer.sendMail();
-        // try {
-        //   await transporter.sendMail({
-        //     from: 'pgcuascotac@utn.edu.ec', // sender address
-        //     to: arrayUsuario, // list of receivers
-        //     subject: "Mentoria Actualizada ", // Subject line
-        //     text: "La mentoria agendada ha sido actualizada", // plain text body
-        //     html:
-        //       "<b>La mentoria agendada ha sido actualizada</b>" +
-        //       nombre_materia +
-        //       "</b>" +
-        //       "<br>" +
-        //       "<b>Materia:" +
-        //       nombre_materia,
-
-        //     // html body
-        //   });
-
-        //   res.status(200).json({ text: "Email enviado" });
-        // } catch (error) {
-        //   res.status(404).json({ text: "Hubo un error ", error });
-        // }
       } else {
-        if (fechaActual == fecha) {
-          console.log("la fecha es igual");
-          let date = new Date();
-          let horaActual = `${date.getHours()}`;
-          let minutosActual = `${date.getMinutes() + 1}`;
-          let h = parseInt(horaActual);
-          let m = parseInt(minutosActual);
+        if (fechaActual < fecha) {
+          console.log("es menor");
+          const query =
+            "UPDATE registro_mentoria set fecha=?,hora_inicio=?,hora_fin=?, id_materia=(select id_materia from materia where nombre_materia=?) where id_registro_mentoria=?";
+          pool.query(query, [fecha, hora_inicio, hora_fin, nombre_materia, id]);
 
-          console.log("hora actual", h);
-          console.log("minutos actual", m);
-          var horaMentoria = hora_inicio.split(":");
-          let h1 = horaMentoria[0];
-          let m2 = horaMentoria[1];
-          console.log("hora regitro", h1);
-          console.log("minutos regis", m2);
-
-          let horaA = h1 - h;
-          let minutoA = m2 - m;
-
-          if (minutoA < 0) {
-            horaA--;
-            minutoA = 60 + minutoA;
+          const usuario = await pool.query(
+            "select u.correo_electronico from tipo_estado_agend_mentoria t,registro_mentoria r, agendamiento_mentorias a, usuario u where r.id_registro_mentoria=a.id_registro_mentoria and u.id_usuario=a.id_usuario and t.id_estado_agen_mentoria=a.id_estado_agen_mentoria and a.id_registro_mentoria=?",
+            [id]
+          );
+          console.log(usuario);
+          var arrayUsuario = [];
+          var someVar = [];
+          for (let usu of usuario) {
+            someVar.push(usu.correo_electronico);
           }
-          console.log("LA HORA ES", horaA);
-          if (horaA >= 1) {
-            const query =
-              "UPDATE registro_mentoria set fecha=?,hora_inicio=?,hora_fin=?, materia=? where id_registro_mentoria=?";
-            pool.query(query, [
-              fecha,
-              hora_inicio,
-              hora_fin,
-              nombre_materia,
-              id,
-            ]);
+          console.log(someVar);
+          arrayUsuario = someVar;
+          console.log("el correo", arrayUsuario);
+          try {
+            await transporter.sendMail({
+              from: "lupitagcjazy@gmail.com", // sender address
+              to: arrayUsuario, // list of receivers
+              subject: "Mentoria Actualizada ", // Subject line
+              text: "La mentoria agendada ha sido actualizada", // plain text body
+              html:
+                "<b>La mentoria agendada ha sido actualizada</b>"+
+                "</b>" +
+                "<br>" +
+                "<b>Materia:" +
+                nombre_materia + "<br>" +
+                "<b>Fecha mentoria:" + fecha
+              
 
-            const usuario = await pool.query(
-              "select u.correo_electronico from tipo_estado_agend_mentoria t,registro_mentoria r, agendamiento_mentorias a, usuario u where r.id_registro_mentoria=a.id_registro_mentoria and u.id_usuario=a.id_usuario and t.id_estado_agen_mentoria=a.id_estado_agen_mentoria and a.id_registro_mentoria=?",
 
-              [id]
-            );
-            console.log(usuario);
-            var arrayUsuario = [];
-            var someVar = [];
-            for (let usu of usuario) {
-              someVar.push(usu.correo_electronico);
+              // html body
+            });
+
+            res.status(200).json({ text: "Email enviado" });
+          } catch (error) {
+            res.status(404).json({ text: "Hubo un error ", error });
+          }
+        } else {
+          if (fechaActual == fecha) {
+            console.log("la fecha es igual");
+            let date = new Date();
+            let horaActual = `${date.getHours()}`;
+            let minutosActual = `${date.getMinutes() + 1}`;
+            let h = parseInt(horaActual);
+            let m = parseInt(minutosActual);
+            console.log("hora actual", h);
+            console.log("minutos actual", m);
+            var horaMentoria = hora_inicio.split(":");
+            let h1 = horaMentoria[0];
+            let m2 = horaMentoria[1];
+            console.log("hora regitro", h1);
+            console.log("minutos regis", m2);
+            let horaA = h1 - h;
+            let minutoA = m2 - m;
+            if (minutoA < 0) {
+              horaA--;
+              minutoA = 60 + minutoA;
             }
-            arrayUsuario = someVar;
-            try {
-              await transporter.sendMail({
-                from: '"FICA STEM"<ficastemutn@gmail.com>', // sender address
-                to: arrayUsuario, // list of receivers
-                subject: "Mentoria Actualizada ", // Subject line
-                text: "La mentoria agendada ha sido actualizada", // plain text body
-                html: "<b> La mentoria agendada ha sido actualizada</b>", // html body
-              });
-
-              res.status(200).json({ text: "Email enviado" });
-            } catch (error) {
-              res.status(404).json({ text: "Hubo un error ", error });
+            console.log("LA HORA ES", horaA);
+            if (horaA >= 1) {
+              const query =
+                "UPDATE registro_mentoria set fecha=?,hora_inicio=?,hora_fin=?, materia=? where id_registro_mentoria=?";
+              pool.query(query, [
+                fecha,
+                hora_inicio,
+                hora_fin,
+                nombre_materia,
+                id,
+              ]);
+              const usuario = await pool.query(
+                "select u.correo_electronico from tipo_estado_agend_mentoria t,registro_mentoria r, agendamiento_mentorias a, usuario u where r.id_registro_mentoria=a.id_registro_mentoria and u.id_usuario=a.id_usuario and t.id_estado_agen_mentoria=a.id_estado_agen_mentoria and a.id_registro_mentoria=?",
+                [id]
+              );
+              console.log(usuario);
+              var arrayUsuario = [];
+              var someVar = [];
+              for (let usu of usuario) {
+                someVar.push(usu.correo_electronico);
+              }
+              arrayUsuario = someVar;
+              try {
+                await transporter.sendMail({
+                  from: '"FICA STEM"<ficastemutn@gmail.com>', // sender address
+                  to: arrayUsuario, // list of receivers
+                  subject: "Mentoria Actualizada ", // Subject line
+                  text: "La mentoria agendada ha sido actualizada", // plain text body
+                  html:
+                  "<b>La mentoria agendada ha sido actualizada</b>"+
+                  "</b>" +
+                  "<br>" +
+                  "<b>Materia:" +
+                  nombre_materia + "<br>" +
+                  "<b>Fecha mentoria:" + fecha
+                
+                });
+                res.status(200).json({ text: "Email enviado" });
+              } catch (error) {
+                res.status(404).json({ text: "Hubo un error ", error });
+              }
+            } else {
+              res
+                .status(404)
+                .json({ text: "No se puede actualizar la  mentoria" });
             }
-          } else {
-            res
-              .status(404)
-              .json({ text: "No se puede actualizar la  mentoria" });
           }
         }
       }
