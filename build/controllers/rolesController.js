@@ -5,7 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.rolesController = void 0;
 const database_1 = __importDefault(require("../database"));
-// import {transporter} from '../controllers/emailer'
+const emailer_1 = require("../controllers/emailer");
+const sgMail = require("../controllers/emailer");
 class RolesController {
     async list(req, res) {
         // const roles = await pool.query("SELECT * FROM rol");
@@ -32,23 +33,32 @@ class RolesController {
         res.json({ text: "el rol no existe" });
     }
     async create(req, res) {
+        const correo = req.body.correo;
+        console.log(correo);
         try {
-            const tipo_rol = req.body.tipo_rol;
-            const query = "INSERT INTO rol(tipo_rol)VALUES (?)";
-            await database_1.default.query(query, [tipo_rol]);
-            res.status(201).json({ text: "Guardado" });
-            //  await transporter.sendMail({
-            //   from: '"Fred Foo 👻"<lupitacuas@hotmail.com>', // sender address
-            //   to: "lupitagcjazy@gmail.com", // list of receivers
-            //   subject: "Bienevenido hola mundo✔ ", // Subject line
-            //   text: "Hello world?", // plain text body
-            //   html: "<b>Hello world  bienvenido?</b>", // html body
-            // });
+            await emailer_1.transporter.sendMail({
+                from: '"FICA STEM"<ficastemutn@gmail.com>',
+                to: correo,
+                subject: "Mentoria agendada ",
+                text: "La mentoria agendada ha sido cancelada",
+            });
+            res.status(200).json({ text: "Email enviado" });
         }
-        catch (err) {
-            res.status(400).json({ text: "Hubo un error " });
-            console.log("hubo un errro" + err);
+        catch (error) {
+            console.log("HUBO UN ERROR");
         }
+        // const msg={
+        //     to:correo,
+        //     from:"pgcuascotac23@gmail.com",
+        //     Subject:"Hello",
+        //     text:"it is",
+        //   }
+        //   try {
+        //     await sgMail.send(msg);
+        //     res.status(204).json({ message: "enviado" });
+        //   } catch (error) {
+        //     console.log("error",error);
+        //   }
     }
     async delete(req, res) {
         try {

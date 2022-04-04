@@ -2,7 +2,11 @@ import { validate } from "class-validator";
 import { Request, Response } from "express";
 import pool from "../database";
 import nodemailer = require("nodemailer");
-// import {transporter} from '../controllers/emailer'
+
+ import { transporter } from "../controllers/emailer";
+
+const sgMail = require("../controllers/emailer");
+
 class RolesController {
   public async list(req: Request, res: Response) {
     // const roles = await pool.query("SELECT * FROM rol");
@@ -31,28 +35,40 @@ class RolesController {
   }
 
   public async create(req: Request, res: Response) {
-    
-    try {
-      const tipo_rol = req.body.tipo_rol;
-      const query = "INSERT INTO rol(tipo_rol)VALUES (?)";
-      await pool.query(query, [tipo_rol]);
-      res.status(201).json({ text: "Guardado" });
-      
-  
-      //  await transporter.sendMail({
-      //   from: '"Fred Foo 👻"<lupitacuas@hotmail.com>', // sender address
-      //   to: "lupitagcjazy@gmail.com", // list of receivers
-      //   subject: "Bienevenido hola mundo✔ ", // Subject line
-      //   text: "Hello world?", // plain text body
-      //   html: "<b>Hello world  bienvenido?</b>", // html body
-      // });
-  
-    } catch (err) {
-      res.status(400).json({ text: "Hubo un error " });
-      console.log("hubo un errro" + err);
-    }
-  }
+    const correo = req.body.correo;
+    console.log(correo);
 
+    try {
+      await transporter.sendMail({
+        from: '"FICA STEM"<ficastemutn@gmail.com>', // sender address
+        to: correo, // list of receivers
+        subject: "Mentoria agendada ", // Subject line
+        text: "La mentoria agendada ha sido cancelada", // plain text body
+       
+      
+      });
+      res.status(200).json({ text: "Email enviado" });
+    } catch (error) {
+      console.log("HUBO UN ERROR");
+    }
+
+    // const msg={
+    //     to:correo,
+    //     from:"pgcuascotac23@gmail.com",
+    //     Subject:"Hello",
+    //     text:"it is",
+    //   }
+    //   try {
+    //     await sgMail.send(msg);
+    //     res.status(204).json({ message: "enviado" });
+
+    //   } catch (error) {
+    //     console.log("error",error);
+    //   }
+
+
+  }
+    
   public async delete(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;

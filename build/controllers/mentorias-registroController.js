@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mentoriasController = void 0;
 const database_1 = __importDefault(require("../database"));
-const emailer_1 = require("../controllers/emailer");
+const sgMail = require("../controllers/emailer");
 var myDate = new Date();
 class MentoriasController {
     async listMentoras(req, res) {
@@ -270,7 +270,7 @@ class MentoriasController {
                     arrayUsuario = someVar;
                     console.log("el correo", arrayUsuario);
                     try {
-                        await emailer_1.transporter.sendMail({
+                        await sgMail.sendMail({
                             from: "lupitagcjazy@gmail.com",
                             to: arrayUsuario,
                             subject: "Mentoria Actualizada ",
@@ -329,7 +329,7 @@ class MentoriasController {
                             }
                             arrayUsuario = someVar;
                             try {
-                                await emailer_1.transporter.sendMail({
+                                await sgMail.sendMail({
                                     from: '"FICA STEM"<ficastemutn@gmail.com>',
                                     to: arrayUsuario,
                                     subject: "Mentoria Actualizada ",

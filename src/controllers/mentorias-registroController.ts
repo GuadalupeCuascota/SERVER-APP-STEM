@@ -1,7 +1,9 @@
 import { Console } from "console";
 import { Request, Response } from "express";
 import pool from "../database";
-import { transporter } from "../controllers/emailer";
+
+const sgMail = require("../controllers/emailer");
+
 
 import { Any } from "typeorm";
 import e = require("express");
@@ -332,7 +334,7 @@ class MentoriasController {
           arrayUsuario = someVar;
           console.log("el correo", arrayUsuario);
           try {
-            await transporter.sendMail({
+            await sgMail.sendMail({
               from: "lupitagcjazy@gmail.com", // sender address
               to: arrayUsuario, // list of receivers
               subject: "Mentoria Actualizada ", // Subject line
@@ -398,7 +400,7 @@ class MentoriasController {
               }
               arrayUsuario = someVar;
               try {
-                await transporter.sendMail({
+                await sgMail.sendMail({
                   from: '"FICA STEM"<ficastemutn@gmail.com>', // sender address
                   to: arrayUsuario, // list of receivers
                   subject: "Mentoria Actualizada ", // Subject line

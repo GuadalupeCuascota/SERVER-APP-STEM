@@ -8,7 +8,7 @@ const database_1 = __importDefault(require("../database"));
 class ConsultasDashboardController {
     async NroEstudiantesMes(req, res) {
         const convert = await database_1.default.query("SET lc_time_names = 'es_ES'");
-        await database_1.default.query("SELECT MONTHNAME(fecha_registro) as 'Mes',COUNT(id_usuario) as 'NroEstudiantes' from usuario where id_rol=4 group by monthname(fecha_registro)", (err, rows) => {
+        await database_1.default.query("SELECT MONTHNAME(fecha_registro) as 'Mes',COUNT(id_usuario) as 'NroEstudiantes' from usuario where id_rol=4 or id_rol=5 group by monthname(fecha_registro)", (err, rows) => {
             if (err) {
                 res.status(404).json("error al cargar");
                 console.log(err);
@@ -33,7 +33,7 @@ class ConsultasDashboardController {
         });
     }
     async eventosPorCarrera(req, res) {
-        await database_1.default.query("select e.id_publicacion, c.nombre_carrera, c.id_carrera, count(id_tipo_evento) as 'likes' from evento e, publicacion p, carreras_fica c where e.id_tipo_evento=1 and c.id_carrera=p.id_carrera and p.id_publicacion=e.id_publicacion group by c.id_carrera", (err, rows) => {
+        await database_1.default.query("select  c.nombre_carrera, c.id_carrera, count(id_tipo_evento) as 'likes' from evento e, publicacion p, carreras_fica c where e.id_tipo_evento=1 and c.id_carrera=p.id_carrera and p.id_publicacion=e.id_publicacion group by c.id_carrera", (err, rows) => {
             if (err) {
                 res.status(404).json("error al cargar ");
                 console.log(err);

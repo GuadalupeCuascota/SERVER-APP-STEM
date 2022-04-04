@@ -5,7 +5,6 @@ export default {
     user: "stem",
     password: "gclupita4137",
     database: "bdd_appstem",
-    
 
   },
 };

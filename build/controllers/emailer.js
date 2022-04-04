@@ -1,16 +1,30 @@
 "use strict";
+// const  sendMail=async(msg:any)=>{
+//   try {
+//     await sgMail.send(msg);
+//     console.log("Mensaje enviado");
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.transporter = void 0;
-var nodemailer = require("nodemailer");
-//SENDGRID
-// const nodemailer =require('nodemailer');
-// const sendgridTransport=require ('nodemailer-sendgrid-transport');
-// const sgMail = require('@sendgrid/mail')
-// export const transport =nodemailer.createTransport(sendgridTransport({
-//   auth:{
-//     api_key:'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'
+//   } catch (error) {
+//     console.log(error);
 //   }
-// }))
+// };
+// => return Promise
+//  var mailchimp = require("@mailchimp/mailchimp_marketing");
+// export const mail=mailchimp.setConfig({
+//   apiKey: "b59c76fbf925cb8c8338acb0d239478e-us14",
+//   server: "us14",
+// });
+// async function run() {
+//   try {
+//     const response = await mailchimp.ping.get();
+//     console.log(response);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }
+// run();
+var nodemailer = require("nodemailer");
 exports.transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,

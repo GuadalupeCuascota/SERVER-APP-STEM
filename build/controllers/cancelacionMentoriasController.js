@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.cancelacionMentoriasController = void 0;
 const database_1 = __importDefault(require("../database"));
-const emailer_1 = require("./emailer");
+const emailer_1 = require("../controllers/emailer");
 class CancelacionMentoriasController {
     //  localtime=moment().format('YYYY-MM-DD');
     async updateRegistroMentoria(req, res) {

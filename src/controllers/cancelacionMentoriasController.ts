@@ -1,7 +1,8 @@
 import { Console } from "console";
 import { Request, Response } from "express";
 import pool from "../database";
-import { transporter } from "./emailer";
+import { transporter } from "../controllers/emailer";
+
 import * as format from "date-fns/format";
 
 class CancelacionMentoriasController {
