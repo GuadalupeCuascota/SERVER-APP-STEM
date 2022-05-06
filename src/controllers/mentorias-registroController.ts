@@ -27,12 +27,12 @@ class MentoriasController {
       }
     );
   }
-
+///OBTENER DISPONIBILIDAD DE HORARIOS
   public async getHorariosMentora(req: Request, res: Response) {
-    console.log("obtener disponibilidad de horarios");
+    console.log("obtener disponibilidad de horarios hh");
     const { id } = req.params;
     const horariosMentorias = await pool.query(
-      "SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.id_carrera, m.id_materia , mt.nombre_materia, m.id_estado_mentoria, t.nombre_estado_mentoria , t.id_estado_mentoria from registro_mentoria m, usuario u , materia mt, tipo_estado_mentoria t WHERE m.id_usuario=u.id_usuario and mt.id_materia=m.id_materia and u.id_usuario=? and  m.fecha>=CURDATE() and t.id_estado_mentoria=m.id_estado_mentoria",
+      "SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.id_carrera, m.id_materia , mt.nombre_materia, m.id_estado_mentoria, t.nombre_estado_mentoria , t.id_estado_mentoria from registro_mentoria m, usuario u , materia mt, tipo_estado_mentoria t WHERE m.id_usuario=u.id_usuario and mt.id_materia=m.id_materia and u.id_usuario=? and  m.fecha>=CURDATE() and t.id_estado_mentoria=m.id_estado_mentoria ORDER BY m.fecha ASC",
       [id]
     );
 
@@ -46,7 +46,7 @@ class MentoriasController {
   public async list(req: Request, res: Response) {
     console.log("pasa obtner mentorias registradas");
     await pool.query(
-      "SELECT r.id_registro_mentoria,r.fecha, r.hora_inicio, r.hora_fin,u.nombre,u.apellido,c.nombre_carrera,c.id_carrera,r.id_usuario, m.nombre_materia ,ts.nombre_estado_mentoria from registro_mentoria r, usuario u, tipo_estado_mentoria ts, carreras_fica c, materia m	WHERE r.id_usuario=u.id_usuario and c.id_carrera=u.id_carrera and ts.id_estado_mentoria=r.id_estado_mentoria and m.id_materia=r.id_materia ORDER BY fecha_registro DESC",
+      "SELECT r.id_registro_mentoria,r.fecha, r.hora_inicio, r.hora_fin,u.nombre,u.apellido,c.nombre_carrera,c.id_carrera,r.id_usuario, m.nombre_materia ,ts.nombre_estado_mentoria from registro_mentoria r, usuario u, tipo_estado_mentoria ts, carreras_fica c, materia m	WHERE r.id_usuario=u.id_usuario and c.id_carrera=u.id_carrera and ts.id_estado_mentoria=r.id_estado_mentoria and m.id_materia=r.id_materia ORDER BY r.fecha ASC",
       (err: any, rows: any) => {
         if (err) {
           res.status(404).json("error al cargar");
