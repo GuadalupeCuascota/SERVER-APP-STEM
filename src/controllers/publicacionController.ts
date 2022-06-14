@@ -45,84 +45,7 @@ class ArchivosController {
     res.status(404).json({ text: "publicación no existe" });
   }
 
-  // public async create1(req: Request, res: Response) {
-  //   console.log("ARCHIVO CLOUDINARY");
-  //   const cloudinary = require("cloudinary");
-  //   cloudinary.config({
-  //     //conexion a cloudinary
-  //     cloud_name: "dlmebnxnv",
-  //     api_key: "941161988641637",
-  //     api_secret: "goFBkSN4gSR10QPWAhS4e18-O5U",
-  //   });
-  //   const fs = require("fs-extra");
-
-  //   try {
-  //     const {
-  //       titulo,
-  //       nombre_perfil,
-  //       descripcion,
-  //       enlace,
-  //       profesion,
-  //       estado_profesion,
-  //       id_tipo_publicacion,
-  //       id_usuario,
-  //       id_estado_publicacion,
-  //       id_carrera,
-  //     } = req.body;
-
-  //     const result=await cloudinary.v2.uploader.upload(req.file.path)
-
-  //     const query =
-  //       "INSERT INTO publicacion (titulo,nombre_perfil,descripcion,enlace,profesion,estado_profesion,ruta_archivo,public_id_archivo,tipo_archivo,id_tipo_publicacion,id_usuario,id_estado_publicacion,id_carrera) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,(select id_carrera from carreras_fica where nombre_carrera=?))";
-
-  //     if (req.file) {
-  //       console.log("ESISTE ARCHIVO");
-
-  //       const tipo_archivo = req.file.mimetype;
-  //       const ruta_archivo=result.ruta_archivo;
-  //       const public_id=result.public_id
-
-  //       await pool.query(query, [
-  //         titulo,
-  //         nombre_perfil,
-  //         descripcion,
-  //         enlace,
-  //         profesion,
-  //         estado_profesion,
-  //         ruta_archivo,
-  //         public_id,
-  //         tipo_archivo,
-  //         id_tipo_publicacion,
-  //         id_usuario,
-  //         id_estado_publicacion,
-  //         id_carrera,
-  //       ]);
-  //       await fs.unlink(req.file.path); //eliminar de archivo de la ruta local
-  //       res.status(201).json({ text: "Archivo guardado" });
-  //     } else {
-  //       const query1 =
-  //         "INSERT INTO publicacion (titulo,nombre_perfil,descripcion,enlace,profesion,estado_profesion,id_tipo_publicacion,id_usuario,id_estado_publicacion,id_carrera) VALUES (?,?,?,?,?,?,?,?,?,(select id_carrera from carreras_fica where nombre_carrera=?))";
-  //       console.log("no tiene archivo");
-
-  //       await pool.query(query1, [
-  //         titulo,
-  //         nombre_perfil,
-  //         descripcion,
-  //         enlace,
-  //         profesion,
-  //         estado_profesion,
-  //         id_tipo_publicacion,
-  //         id_usuario,
-  //         id_estado_publicacion,
-  //         id_carrera,
-  //       ]);
-  //       res.status(201).json({ text: "Archivo guardado" });
-  //     }
-  //   } catch (err) {
-  //     console.log("hubo un error AQUI" + err);
-  //     res.status(404).json({ text: "error no se puede guardar" });
-  //   }
-  // }
+ 
 
   public async create(req: Request, res: Response) {
     console.log("PASA CREAR hoy");
@@ -479,10 +402,7 @@ class ArchivosController {
         try {
           const query =
           "UPDATE publicacion set titulo=?,nombre_perfil=?,descripcion=?,enlace=?, profesion=?,estado_profesion=?, ruta_archivo=? ,tipo_archivo=?,public_id_archivo=?, id_carrera=(select id_carrera from carreras_fica where nombre_carrera=?) WHERE id_publicacion=?";
-        
-        // const result = await cloudinary.v2.uploader.upload(req.file.path);
-        // const ruta_archivo = result.url;
-        // const tipo_archivo = req.file.mimetype;
+       
         const result = await cloudinary.v2.uploader.upload(req.file.path);
 
         console.log(result);
@@ -503,11 +423,10 @@ class ArchivosController {
           nombre_carrera,
           id
         ]);
-        return res.status(204).json({ text: "publicación actualizado" });
-          
+        return res.status(204).json({ text: "publicación actualizado" }); 
         } catch (error) {
-
-          return res.status(404).json({ text: "Hubo un error " }); 
+          console.log(error)
+          return res.status(404).json({ text: "Hubo un error ",error }); 
         }
 
       } else {

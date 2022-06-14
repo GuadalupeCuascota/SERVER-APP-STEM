@@ -12,7 +12,7 @@ import { isEmail } from "class-validator";
 var myDate = new Date();
 class MentoriasController {
   public async listMentoras(req: Request, res: Response) {
-    console.log("pasa obtner mentoras");
+  
     await pool.query(
       "SELECT DISTINCT u.id_usuario, u.nombre,u.apellido, u.id_usuario, c.nombre_carrera , c.id_carrera from registro_mentoria m, usuario u ,carreras_fica c WHERE c.id_carrera=u.id_carrera and m.id_usuario=u.id_usuario and m.fecha>=CURDATE()",
 

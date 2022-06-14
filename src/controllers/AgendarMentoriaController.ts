@@ -7,7 +7,7 @@ class AngerdarMentoriaController {
   public async list(req: Request, res: Response) {
    
     await pool.query(
-      "select a.id_agendamiento_mentoria, r.fecha,r.hora_inicio,r.hora_fin,a.id_usuario,u.nombre,u.apellido,u.correo_electronico,t.nombre_estado_agen_mentoria,a.id_registro_mentoria ,a.id_estado_agen_mentoria, r.id_materia , m.nombre_materia from tipo_estado_agend_mentoria t,registro_mentoria r, agendamiento_mentorias a, usuario u, materia m where r.id_registro_mentoria=a.id_registro_mentoria and u.id_usuario=r.id_usuario and t.id_estado_agen_mentoria=a.id_estado_agen_mentoria and m.id_materia=r.id_materia",
+      "select a.id_agendamiento_mentoria, r.fecha,r.hora_inicio,r.hora_fin,a.id_usuario,u.nombre,u.apellido,u.correo_electronico,t.nombre_estado_agen_mentoria,a.id_registro_mentoria ,a.id_estado_agen_mentoria, r.id_materia , m.nombre_materia from tipo_estado_agend_mentoria t,registro_mentoria r, agendamiento_mentorias a, usuario u, materia m where r.id_registro_mentoria=a.id_registro_mentoria and u.id_usuario=r.id_usuario and t.id_estado_agen_mentoria=a.id_estado_agen_mentoria and m.id_materia=r.id_materia and r.fecha>=CURDATE()",
       (err: any, rows: any) => {
         if (err) {
           res.status(404).json("error al cargar");

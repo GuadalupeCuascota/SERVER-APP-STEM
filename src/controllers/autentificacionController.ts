@@ -7,9 +7,7 @@ import brycpt from "bcryptjs";
 
 class AutentificacionController {
   public async login(req: Request, res: Response) {
-    console.log("PASA LOGIN");
     const { correo_electronico, contrasenia } = req.body;
-
     if (!(correo_electronico && contrasenia)) {
       return res
         .status(404)
@@ -17,7 +15,6 @@ class AutentificacionController {
     } else {
       const usuario = await pool.query(
         "SELECT * FROM usuario WHERE correo_electronico=? and contrasenia=?",
-
         [correo_electronico, contrasenia]
       );
       if (usuario.length > 0) {
@@ -27,11 +24,9 @@ class AutentificacionController {
           apellido: usuario[0].apellido,
           id_rol: usuario[0].id_rol,
           nivel_academico: usuario[0].nivel_academico,
-          // nombre_carrera: usuario[0].nombre_carrera,
           id_carrera:usuario[0].id_carrera
         };
-        const Token = jwt.sign({ payload }, "SCRET", { expiresIn: "1h" });
-
+        const Token = jwt.sign({ payload}, "SCRET", { expiresIn: "1h" });
         console.log(Token);
         return res.status(200).json({ message: "ok", Token, payload });
       } else {

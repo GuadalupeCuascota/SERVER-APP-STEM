@@ -10,7 +10,6 @@ const bcryptjs_1 = __importDefault(require("bcryptjs"));
 // import { getRepository } from 'typeorm';
 class AutentificacionController {
     async login(req, res) {
-        console.log("PASA LOGIN");
         const { correo_electronico, contrasenia } = req.body;
         if (!(correo_electronico && contrasenia)) {
             return res
@@ -26,7 +25,6 @@ class AutentificacionController {
                     apellido: usuario[0].apellido,
                     id_rol: usuario[0].id_rol,
                     nivel_academico: usuario[0].nivel_academico,
-                    // nombre_carrera: usuario[0].nombre_carrera,
                     id_carrera: usuario[0].id_carrera
                 };
                 const Token = jsonwebtoken_1.default.sign({ payload }, "SCRET", { expiresIn: "1h" });
