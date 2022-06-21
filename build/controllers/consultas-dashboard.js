@@ -33,7 +33,7 @@ class ConsultasDashboardController {
         });
     }
     async eventosPorCarrera(req, res) {
-        await database_1.default.query("select  c.nombre_carrera, c.id_carrera, count(id_tipo_evento) as 'likes' from evento e, publicacion p, carreras_fica c where e.id_tipo_evento=1 and c.id_carrera=p.id_carrera and p.id_publicacion=e.id_publicacion group by c.id_carrera", (err, rows) => {
+        await database_1.default.query("select  c.nombre_carrera, c.siglas,c.id_carrera, count(id_tipo_evento) as 'likes' from evento e, publicacion p, carreras_fica c where e.id_tipo_evento=1 and c.id_carrera=p.id_carrera and p.id_publicacion=e.id_publicacion group by c.id_carrera", (err, rows) => {
             if (err) {
                 res.status(404).json("error al cargar ");
                 console.log(err);

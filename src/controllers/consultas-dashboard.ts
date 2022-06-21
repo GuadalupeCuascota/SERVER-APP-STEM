@@ -32,7 +32,7 @@ class ConsultasDashboardController{
 
   public async eventosPorCarrera(req: Request, res: Response) {
 
-    await pool.query("select  c.nombre_carrera, c.id_carrera, count(id_tipo_evento) as 'likes' from evento e, publicacion p, carreras_fica c where e.id_tipo_evento=1 and c.id_carrera=p.id_carrera and p.id_publicacion=e.id_publicacion group by c.id_carrera", (err: any, rows: any) => {
+    await pool.query("select  c.nombre_carrera, c.siglas,c.id_carrera, count(id_tipo_evento) as 'likes' from evento e, publicacion p, carreras_fica c where e.id_tipo_evento=1 and c.id_carrera=p.id_carrera and p.id_publicacion=e.id_publicacion group by c.id_carrera", (err: any, rows: any) => {
     
         if (err) {
           res.status(404).json("error al cargar ");

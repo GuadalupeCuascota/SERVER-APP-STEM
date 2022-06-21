@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {carrerasficaController} from '../controllers/carreras-ficaController';
+import multer from '../libs/multer';
 
 class CarrerasFicaRoutes
 {
@@ -11,9 +12,10 @@ this.config();
 config(): void{
 this.router.get('/',carrerasficaController.list);
 this.router.get('/:id',carrerasficaController.getOne);
-this.router.post('/',carrerasficaController.create);
+this.router.post('/',multer.single('ruta_archivo'),carrerasficaController.create);
+
 this.router.delete('/:id',carrerasficaController.delete);
-this.router.put('/:id',carrerasficaController.update);
+this.router.put('/:id',multer.single('ruta_archivo'),carrerasficaController.update);
 
 }
 }
