@@ -8,6 +8,7 @@ class TemaMateriaRoutes {
         this.config();
     }
     config() {
+        this.router.get('/', temaMateriaController_1.temaMateriaController.list);
         this.router.get('/:id', temaMateriaController_1.temaMateriaController.getOne);
         this.router.post('/', temaMateriaController_1.temaMateriaController.create);
         this.router.delete('/:id', temaMateriaController_1.temaMateriaController.delete);

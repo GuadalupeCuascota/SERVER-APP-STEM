@@ -24,7 +24,7 @@ class MentoriasController {
     async getHorariosMentora(req, res) {
         console.log("obtener disponibilidad de horarios hh");
         const { id } = req.params;
-        const horariosMentorias = await database_1.default.query("SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.id_carrera, m.id_materia , mt.nombre_materia, m.id_estado_mentoria, t.nombre_estado_mentoria , t.id_estado_mentoria from registro_mentoria m, usuario u , materia mt, tipo_estado_mentoria t WHERE m.id_usuario=u.id_usuario and mt.id_materia=m.id_materia and u.id_usuario=? and  m.fecha>=CURDATE() and t.id_estado_mentoria=m.id_estado_mentoria ORDER BY m.fecha ASC", [id]);
+        const horariosMentorias = await database_1.default.query("SELECT m.id_registro_mentoria,m.fecha, m.hora_inicio, m.hora_fin,u.id_carrera, m.id_materia , mt.nombre_materia, m.id_estado_mentoria, t.nombre_estado_mentoria , t.id_estado_mentoria, tm.nombre_tema from registro_mentoria m, usuario u , materia mt, tipo_estado_mentoria t, tema_materia tm WHERE m.id_usuario=u.id_usuario and mt.id_materia=m.id_materia and u.id_usuario=? and  m.fecha>=CURDATE() and t.id_estado_mentoria=m.id_estado_mentoria and tm.id_tema_materia=m.id_tema_materia ORDER BY m.fecha ASC ", [id]);
         console.log(horariosMentorias);
         if (horariosMentorias.length > 0) {
             return res.status(200).json(horariosMentorias);
@@ -33,7 +33,7 @@ class MentoriasController {
     }
     async list(req, res) {
         console.log("pasa obtner mentorias registradas");
-        await database_1.default.query("SELECT r.id_registro_mentoria,r.fecha, r.hora_inicio, r.hora_fin,u.nombre,u.apellido,c.nombre_carrera,c.id_carrera,r.id_usuario, m.nombre_materia ,ts.nombre_estado_mentoria from registro_mentoria r, usuario u, tipo_estado_mentoria ts, carreras_fica c, materia m	WHERE r.id_usuario=u.id_usuario and c.id_carrera=u.id_carrera and ts.id_estado_mentoria=r.id_estado_mentoria and m.id_materia=r.id_materia ORDER BY r.fecha ASC", (err, rows) => {
+        await database_1.default.query("SELECT r.id_registro_mentoria,r.fecha, r.hora_inicio, r.hora_fin,u.nombre,u.apellido,c.nombre_carrera,c.id_carrera,r.id_usuario, m.nombre_materia ,ts.nombre_estado_mentoria,tm.nombre_tema from registro_mentoria r, usuario u, tipo_estado_mentoria ts, carreras_fica c, materia m, tema_materia tm	WHERE r.id_usuario=u.id_usuario and c.id_carrera=u.id_carrera and ts.id_estado_mentoria=r.id_estado_mentoria and m.id_materia=r.id_materia and tm.id_tema_materia=r.id_tema_materia ORDER BY r.fecha ASC", (err, rows) => {
             if (err) {
                 res.status(404).json("error al cargar");
                 console.log(err);
@@ -95,17 +95,18 @@ class MentoriasController {
         let year = date.getFullYear();
         let fechaActual = `${year}-${month}-${day}`;
         try {
-            const { fecha, hora_inicio, hora_fin, id_usuario, nombre_materia, id_estado_mentoria, } = req.body;
+            const { fecha, hora_inicio, hora_fin, id_usuario, nombre_materia, id_estado_mentoria, nombre_tema } = req.body;
             console.log("fecha:" + req.body.fecha);
-            console.log("fecha:" + req.body.hora_inicio);
+            console.log("hora_inicio:" + req.body.hora_inicio);
             console.log("estado_registro" + req.body.id_estado_mentoria);
-            console.log("nombre_materia" + req.body.nombre_materia);
+            console.log("nombre_materia: " + req.body.nombre_materia);
+            console.log("nombre_tema" + req.body.nombre_tema);
             const findRegistro = await database_1.default.query("SELECT * FROM registro_mentoria WHERE id_usuario=? and hora_inicio=? and fecha= ?", [id_usuario, hora_inicio, fecha]);
             if (findRegistro.length > 0) {
                 res.status(404).json({ text: "Mentoria duplicada" });
             }
             else {
-                const query = "INSERT INTO registro_mentoria(fecha, hora_inicio, hora_fin, id_usuario, id_materia,id_estado_mentoria) VALUES (?,?,?,?,(select id_materia from materia where nombre_materia=?),?)";
+                const query = "INSERT INTO registro_mentoria(fecha, hora_inicio, hora_fin, id_usuario, id_materia,id_estado_mentoria,id_tema_materia) VALUES (?,?,?,?,?,?,(select id_tema_materia from tema_materia where nombre_tema=?))";
                 await database_1.default.query(query, [
                     fecha,
                     hora_inicio,
@@ -113,6 +114,7 @@ class MentoriasController {
                     id_usuario,
                     nombre_materia,
                     id_estado_mentoria,
+                    nombre_tema
                 ]);
                 res.status(201).json({ text: "mentoria registrada" });
             }

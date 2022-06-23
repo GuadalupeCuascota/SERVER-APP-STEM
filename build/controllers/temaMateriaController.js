@@ -9,7 +9,7 @@ class TemaMateriaController {
     async list(req, res) {
         // const roles = await pool.query("SELECT * FROM rol");
         // res.json(roles);
-        await database_1.default.query("SELECT tm.nombre_tema, tm.id_tema_materia ,m.id_materia ,m.nombre_materia FROM tema_materia tm , materia m where m.id_materia=? and m.id_materia=tm.id_materia", (err, rows) => {
+        await database_1.default.query("SELECT id_tema_materia, nombre_tema, id_materia FROM tema_materia", (err, rows) => {
             if (err) {
                 res.status(404).json("error al cargar");
                 console.log(err);

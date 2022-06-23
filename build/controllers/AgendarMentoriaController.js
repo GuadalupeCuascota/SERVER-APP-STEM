@@ -7,7 +7,7 @@ exports.agendarMentoriaController = void 0;
 const database_1 = __importDefault(require("../database"));
 class AngerdarMentoriaController {
     async list(req, res) {
-        await database_1.default.query("select a.id_agendamiento_mentoria, r.fecha,r.hora_inicio,r.hora_fin,a.id_usuario,u.nombre,u.apellido,u.correo_electronico,t.nombre_estado_agen_mentoria,a.id_registro_mentoria ,a.id_estado_agen_mentoria, r.id_materia , m.nombre_materia from tipo_estado_agend_mentoria t,registro_mentoria r, agendamiento_mentorias a, usuario u, materia m where r.id_registro_mentoria=a.id_registro_mentoria and u.id_usuario=r.id_usuario and t.id_estado_agen_mentoria=a.id_estado_agen_mentoria and m.id_materia=r.id_materia and r.fecha>=CURDATE()", (err, rows) => {
+        await database_1.default.query("select a.id_agendamiento_mentoria, r.fecha,r.hora_inicio,r.hora_fin,a.id_usuario,u.nombre,u.apellido,u.correo_electronico,t.nombre_estado_agen_mentoria,a.id_registro_mentoria ,a.id_estado_agen_mentoria, r.id_materia , m.nombre_materia, tm.nombre_tema from tipo_estado_agend_mentoria t,registro_mentoria r, agendamiento_mentorias a, usuario u, materia m , tema_materia tm where r.id_registro_mentoria=a.id_registro_mentoria and u.id_usuario=r.id_usuario and  tm.id_tema_materia=r.id_tema_materia and t.id_estado_agen_mentoria=a.id_estado_agen_mentoria and m.id_materia=r.id_materia and r.fecha>=CURDATE()", (err, rows) => {
             if (err) {
                 res.status(404).json("error al cargar");
                 console.log(err);
